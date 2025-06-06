@@ -46,9 +46,70 @@ const ExcitationQuestionnaire = ({ initialData = {}, onSubmit }) => {
     }));
   };
 
+  // Fonction pour calculer le type d'excitation dominant
+  const calculateExcitationType = (answers) => {
+    // Compter les occurrences de chaque type
+    const counts = { A: 0, B: 0, C: 0, D: 0 };
+    
+    Object.values(answers).forEach(answer => {
+      counts[answer] = (counts[answer] || 0) + 1;
+    });
+    
+    // Trouver le type dominant
+    let dominantType = 'A';
+    let maxCount = 0;
+    
+    Object.entries(counts).forEach(([type, count]) => {
+      if (count > maxCount) {
+        maxCount = count;
+        dominantType = type;
+      }
+    });
+    
+    // Mapper le type à une description
+    const typeMap = {
+      'A': 'ÉMOTIONNEL',
+      'B': 'NARRATIF',
+      'C': 'DOMINANT/SOUMIS',
+      'D': 'SENSORIEL'
+    };
+    
+    return typeMap[dominantType];
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit(answers);
+    
+    // Récupérer l'ID du profil actif
+    const activeProfileId = localStorage.getItem('active_profile_id');
+    
+    if (activeProfileId) {
+      // Récupérer le profil actif
+      const activeProfile = JSON.parse(localStorage.getItem('user_profiles')).find(
+        profile => profile.id === activeProfileId
+      );
+      
+      if (activeProfile) {
+        // Mettre à jour le profil avec les réponses du questionnaire d'excitation
+        const updatedProfile = {
+          ...activeProfile,
+          excitationAnswers: answers,
+          // Calculer le type d'excitation dominant
+          excitationType: calculateExcitationType(answers)
+        };
+        
+        // Mettre à jour le profil dans le localStorage
+        const profiles = JSON.parse(localStorage.getItem('user_profiles'));
+        const updatedProfiles = profiles.map(profile => 
+          profile.id === activeProfileId ? updatedProfile : profile
+        );
+        
+        localStorage.setItem('user_profiles', JSON.stringify(updatedProfiles));
+      }
+    }
+    
+    // Rediriger vers la page d'accueil
     navigate('/home');
   };
 
@@ -62,6 +123,35 @@ const ExcitationQuestionnaire = ({ initialData = {}, onSubmit }) => {
     });
     
     onSubmit(randomAnswers);
+    
+    // Récupérer l'ID du profil actif
+    const activeProfileId = localStorage.getItem('active_profile_id');
+    
+    if (activeProfileId) {
+      // Récupérer le profil actif
+      const activeProfile = JSON.parse(localStorage.getItem('user_profiles')).find(
+        profile => profile.id === activeProfileId
+      );
+      
+      if (activeProfile) {
+        // Mettre à jour le profil avec les réponses aléatoires du questionnaire d'excitation
+        const updatedProfile = {
+          ...activeProfile,
+          excitationAnswers: randomAnswers,
+          // Calculer le type d'excitation dominant
+          excitationType: calculateExcitationType(randomAnswers)
+        };
+        
+        // Mettre à jour le profil dans le localStorage
+        const profiles = JSON.parse(localStorage.getItem('user_profiles'));
+        const updatedProfiles = profiles.map(profile => 
+          profile.id === activeProfileId ? updatedProfile : profile
+        );
+        
+        localStorage.setItem('user_profiles', JSON.stringify(updatedProfiles));
+      }
+    }
+    
     navigate('/home');
   };
 

@@ -64,7 +64,66 @@ const SensoryQuestionnaire = ({ initialData = {}, onSubmit }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit(answers);
+    
+    // Récupérer l'ID du profil actif
+    const activeProfileId = localStorage.getItem('active_profile_id');
+    
+    if (activeProfileId) {
+      // Récupérer le profil actif
+      const activeProfile = JSON.parse(localStorage.getItem('user_profiles')).find(
+        profile => profile.id === activeProfileId
+      );
+      
+      if (activeProfile) {
+        // Mettre à jour le profil avec les réponses du questionnaire sensoriel
+        const updatedProfile = {
+          ...activeProfile,
+          sensoryAnswers: answers,
+          // Calculer le style sensoriel dominant
+          dominantStyle: calculateDominantStyle(answers)
+        };
+        
+        // Mettre à jour le profil dans le localStorage
+        const profiles = JSON.parse(localStorage.getItem('user_profiles'));
+        const updatedProfiles = profiles.map(profile => 
+          profile.id === activeProfileId ? updatedProfile : profile
+        );
+        
+        localStorage.setItem('user_profiles', JSON.stringify(updatedProfiles));
+      }
+    }
+    
     navigate('/excitation-questionnaire');
+  };
+  
+  // Fonction pour calculer le style sensoriel dominant
+  const calculateDominantStyle = (answers) => {
+    // Compter les occurrences de chaque type
+    const counts = { A: 0, B: 0, C: 0 };
+    
+    Object.values(answers).forEach(answer => {
+      counts[answer] = (counts[answer] || 0) + 1;
+    });
+    
+    // Trouver le type dominant
+    let dominantType = 'A';
+    let maxCount = 0;
+    
+    Object.entries(counts).forEach(([type, count]) => {
+      if (count > maxCount) {
+        maxCount = count;
+        dominantType = type;
+      }
+    });
+    
+    // Mapper le type à une description
+    const typeMap = {
+      'A': 'VISUEL',
+      'B': 'KINESTHÉSIQUE',
+      'C': 'AUDITIF'
+    };
+    
+    return typeMap[dominantType];
   };
 
   const handleSkip = () => {
@@ -77,8 +136,53 @@ const SensoryQuestionnaire = ({ initialData = {}, onSubmit }) => {
     });
     
     onSubmit(randomAnswers);
+    
+    // Récupérer l'ID du profil actif
+    const activeProfileId = localStorage.getItem('active_profile_id');
+    
+    if (activeProfileId) {
+      // Récupérer le profil actif
+      const activeProfile = JSON.parse(localStorage.getItem('user_profiles')).find(
+        profile => profile.id === activeProfileId
+      );
+      
+      if (activeProfile) {
+        // Mettre à jour le profil avec les réponses aléatoires du questionnaire sensoriel
+        const updatedProfile = {
+          ...activeProfile,
+          sensoryAnswers: randomAnswers,
+          // Calculer le style sensoriel dominant
+          dominantStyle: calculateDominantStyle(randomAnswers),
+          // Ajouter des réponses aléatoires pour le questionnaire d'excitation
+          excitationAnswers: generateRandomExcitationAnswers(),
+          // Calculer le type d'excitation dominant
+          excitationType: 'ÉMOTIONNEL' // Valeur par défaut
+        };
+        
+        // Mettre à jour le profil dans le localStorage
+        const profiles = JSON.parse(localStorage.getItem('user_profiles'));
+        const updatedProfiles = profiles.map(profile => 
+          profile.id === activeProfileId ? updatedProfile : profile
+        );
+        
+        localStorage.setItem('user_profiles', JSON.stringify(updatedProfiles));
+      }
+    }
+    
     // Si l'utilisateur passe ce questionnaire, on le redirige directement vers la page d'accueil
     navigate('/home');
+  };
+  
+  // Fonction pour générer des réponses aléatoires pour le questionnaire d'excitation
+  const generateRandomExcitationAnswers = () => {
+    const randomAnswers = {};
+    // Simuler les questions du questionnaire d'excitation
+    for (let i = 1; i <= 3; i++) {
+      const options = ['A', 'B', 'C', 'D'];
+      const randomIndex = Math.floor(Math.random() * options.length);
+      randomAnswers[i] = options[randomIndex];
+    }
+    return randomAnswers;
   };
 
   return (
