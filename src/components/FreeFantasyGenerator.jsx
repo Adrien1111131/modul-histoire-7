@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import profileService from '../services/profileService';
 import ReadingTimeSlider from './ReadingTimeSlider';
+import EroticismLevelSlider from './EroticismLevelSlider';
 import fondStart from '/fond start.png';
 
 const FreeFantasyGenerator = () => {
   const navigate = useNavigate();
   const [fantasyText, setFantasyText] = useState('');
   const [readingTime, setReadingTime] = useState(10);
+  const [eroticismLevel, setEroticismLevel] = useState(2); // Niveau modéré par défaut
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
@@ -35,7 +37,8 @@ const FreeFantasyGenerator = () => {
       state: { 
         fantasyText,
         existingProfile,
-        readingTime
+        readingTime,
+        eroticismLevel
       } 
     });
   };
@@ -111,6 +114,16 @@ const FreeFantasyGenerator = () => {
                 <ReadingTimeSlider 
                   value={readingTime}
                   onChange={setReadingTime}
+                />
+              </div>
+
+              <div>
+                <h3 className="text-xl font-medium text-amber-200 mb-3">
+                  Niveau d'érotisme
+                </h3>
+                <EroticismLevelSlider 
+                  value={eroticismLevel}
+                  onChange={setEroticismLevel}
                 />
               </div>
 

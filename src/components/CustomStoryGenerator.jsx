@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { storyOptions } from '../data/storyOptions';
 import profileService from '../services/profileService';
 import ReadingTimeSlider from './ReadingTimeSlider';
+import EroticismLevelSlider from './EroticismLevelSlider';
 import fondStart from '/fond start.png';
 
 const CustomStoryGenerator = () => {
@@ -11,6 +12,7 @@ const CustomStoryGenerator = () => {
   const [selectedPersonnage, setSelectedPersonnage] = useState('');
   const [selectedLieu, setSelectedLieu] = useState('');
   const [readingTime, setReadingTime] = useState(10);
+  const [eroticismLevel, setEroticismLevel] = useState(2); // Niveau modéré par défaut
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -20,7 +22,8 @@ const CustomStoryGenerator = () => {
         situation: storyOptions.situations.find(s => s.id === selectedSituation),
         personnage: storyOptions.personnages.find(p => p.id === selectedPersonnage),
         lieu: storyOptions.lieux.find(l => l.id === selectedLieu),
-        readingTime
+        readingTime,
+        eroticismLevel
       };
       
       // Récupérer le profil s'il existe
@@ -151,6 +154,16 @@ const CustomStoryGenerator = () => {
                 <ReadingTimeSlider 
                   value={readingTime}
                   onChange={setReadingTime}
+                />
+              </div>
+
+              <div>
+                <h3 className="text-xl font-medium text-amber-200 mb-3">
+                  5. Quel niveau d'érotisme souhaites-tu ?
+                </h3>
+                <EroticismLevelSlider 
+                  value={eroticismLevel}
+                  onChange={setEroticismLevel}
                 />
               </div>
 
