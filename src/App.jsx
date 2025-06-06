@@ -1,6 +1,6 @@
-import React from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
-import { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
+import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
+import profileService from './services/profileService';
 
 import WelcomePage from './components/WelcomePage';
 import ExplanationPage from './components/ExplanationPage';
@@ -20,6 +20,7 @@ import FreeFantasyResult from './components/FreeFantasyResult';
 
 function App() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [userProfile, setUserProfile] = useState({
     personalInfo: {},
     sensoryAnswers: {},
@@ -27,6 +28,20 @@ function App() {
   });
   
   const [randomStoryData, setRandomStoryData] = useState(null);
+
+  // Vérifier si un profil existe déjà au démarrage de l'application
+  useEffect(() => {
+    // Vérifier si nous sommes sur la page d'accueil initiale
+    if (location.pathname === '/') {
+      // Vérifier si un profil existe déjà dans le localStorage
+      const activeProfile = profileService.getActiveProfileData();
+      
+      // Si un profil existe, rediriger vers la page d'accueil principale
+      if (activeProfile) {
+        navigate('/home');
+      }
+    }
+  }, [location.pathname, navigate]);
 
   const updatePersonalInfo = useCallback((info) => {
     setUserProfile(prev => ({
