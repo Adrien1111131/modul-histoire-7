@@ -162,14 +162,22 @@ const HomePage = () => {
                   <div className="flex justify-end">
                     <button 
                       onClick={() => {
-                        // Vérifier si un profil actif existe
+                        // Récupérer le profil actif s'il existe
                         const activeProfile = profileService.getActiveProfileData();
-                        if (!activeProfile) {
-                          // Si aucun profil actif, rediriger vers la page de création de profil
-                          alert('Veuillez créer un profil avant de générer une histoire aléatoire');
-                          navigate('/personal-info');
-                          return;
-                        }
+                        
+                        // Créer un profil par défaut si aucun profil actif n'est trouvé
+                        const defaultProfile = {
+                          name: "Utilisateur",
+                          gender: "femme",
+                          orientation: "hétérosexuelle",
+                          dominantStyle: "VISUEL",
+                          excitationType: "ÉMOTIONNEL",
+                          tone: "doux",
+                          length: "medium"
+                        };
+                        
+                        // Utiliser le profil actif ou le profil par défaut
+                        const profileToUse = activeProfile || defaultProfile;
 
                         // Générer des kinks aléatoires (entre 2 et 4)
                         const allKinks = [
@@ -189,16 +197,16 @@ const HomePage = () => {
                         // Créer les données pour l'histoire aléatoire
                         const storyData = {
                           personalInfo: {
-                            name: activeProfile.name,
-                            gender: activeProfile.gender,
-                            orientation: activeProfile.orientation || 'hétérosexuelle'
+                            name: profileToUse.name,
+                            gender: profileToUse.gender,
+                            orientation: profileToUse.orientation || 'hétérosexuelle'
                           },
                           selectedKinks: randomKinks,
                           readingTime: Math.floor(Math.random() * 10) + 5, // 5 à 15 minutes
-                          dominantStyle: activeProfile.dominantStyle,
-                          excitationType: activeProfile.excitationType,
-                          tone: activeProfile.tone || 'doux',
-                          length: activeProfile.length || 'medium',
+                          dominantStyle: profileToUse.dominantStyle || "VISUEL",
+                          excitationType: profileToUse.excitationType || "ÉMOTIONNEL",
+                          tone: profileToUse.tone || 'doux',
+                          length: profileToUse.length || 'medium',
                           eroticismLevel: 2 // Niveau par défaut
                         };
 
