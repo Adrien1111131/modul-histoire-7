@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ProfileCard from './ProfileCard';
 import profileService from '../services/profileService';
-import EroticismSlider from './EroticismSlider';
+import MysterySettingsModal from './MysterySettingsModal';
+import { logUserAction, ANALYTICS_ACTIONS } from '../services/analyticsService';
 import fondStart from '/fond start.png';
 import myDesireLogo from '/logo1.png';
 import inattenduImg from '/linatendu.png';
@@ -194,7 +195,7 @@ const HomePage = () => {
                           allKinks.splice(randomIndex, 1);
                         }
 
-                        // Créer les données pour l'histoire aléatoire
+                        // Créer les données de base pour l'histoire aléatoire
                         const storyData = {
                           personalInfo: {
                             name: profileToUse.name,
@@ -202,18 +203,16 @@ const HomePage = () => {
                             orientation: profileToUse.orientation || 'hétérosexuelle'
                           },
                           selectedKinks: randomKinks,
-                          readingTime: Math.floor(Math.random() * 10) + 5, // 5 à 15 minutes
                           dominantStyle: profileToUse.dominantStyle || "VISUEL",
                           excitationType: profileToUse.excitationType || "ÉMOTIONNEL",
                           tone: profileToUse.tone || 'doux',
-                          length: profileToUse.length || 'medium',
-                          eroticismLevel: 2 // Niveau par défaut
+                          length: profileToUse.length || 'medium'
                         };
 
                         // Stocker temporairement les données
                         setTempRandomStoryData(storyData);
                         
-                        // Afficher le curseur d'érotisme
+                        // Afficher le modal de paramètres
                         setShowEroticismSlider(true);
                       }}
                       className="button-text bg-white/30 hover:bg-white/40 text-white px-4 py-1.5 rounded-full flex items-center"
@@ -247,7 +246,14 @@ const HomePage = () => {
                   </div>
                   <div className="flex justify-end">
                     <button 
-                      onClick={() => navigate('/custom-story')}
+                      onClick={() => {
+                        logUserAction(
+                          ANALYTICS_ACTIONS.STORY_MODE_SELECTED,
+                          'HomePage',
+                          { mode: 'guided', description: 'Guidée - scénario personnalisé' }
+                        );
+                        navigate('/custom-story');
+                      }}
                       className="button-text bg-white/30 hover:bg-white/40 text-white px-4 py-1.5 rounded-full flex items-center"
                     >
                       Choisir
@@ -279,7 +285,14 @@ const HomePage = () => {
                   </div>
                   <div className="flex justify-end">
                     <button 
-                      onClick={() => navigate('/random-story-generator')}
+                      onClick={() => {
+                        logUserAction(
+                          ANALYTICS_ACTIONS.STORY_MODE_SELECTED,
+                          'HomePage',
+                          { mode: 'fantasies', description: 'Fantasmes - sélection de catégories' }
+                        );
+                        navigate('/random-story-generator');
+                      }}
                       className="button-text bg-white/30 hover:bg-white/40 text-white px-4 py-1.5 rounded-full flex items-center"
                     >
                       Sélectionner
@@ -311,7 +324,14 @@ const HomePage = () => {
                   </div>
                   <div className="flex justify-end">
                     <button 
-                      onClick={() => navigate('/free-fantasy')}
+                      onClick={() => {
+                        logUserAction(
+                          ANALYTICS_ACTIONS.STORY_MODE_SELECTED,
+                          'HomePage',
+                          { mode: 'free', description: 'Libre - fantasme personnalisé' }
+                        );
+                        navigate('/free-fantasy');
+                      }}
                       className="button-text bg-white/30 hover:bg-white/40 text-white px-4 py-1.5 rounded-full flex items-center"
                     >
                       Écrire
@@ -332,22 +352,24 @@ const HomePage = () => {
         </div>
       </div>
 
-      {/* Curseur d'érotisme */}
+      {/* Modal de paramètres pour le mode Mystère */}
       {showEroticismSlider && tempRandomStoryData && (
-        <EroticismSlider
-          initialValue={tempRandomStoryData.eroticismLevel}
+        <MysterySettingsModal
+          initialReadingTime={2}
+          initialEroticismLevel={2}
           onClose={() => setShowEroticismSlider(false)}
-          onSubmit={(eroticismLevel) => {
-            // Mettre à jour le niveau d'érotisme dans les données
+          onSubmit={({ readingTime, eroticismLevel }) => {
+            // Mettre à jour les paramètres dans les données
             const updatedStoryData = {
               ...tempRandomStoryData,
+              readingTime,
               eroticismLevel
             };
             
             // Stocker les données dans le localStorage pour les récupérer dans RandomStoryResult
             localStorage.setItem('randomStoryData', JSON.stringify(updatedStoryData));
             
-            // Fermer le curseur
+            // Fermer le modal
             setShowEroticismSlider(false);
             
             // Rediriger vers la page de résultat

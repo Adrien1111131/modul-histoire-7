@@ -17,6 +17,7 @@ import CustomStoryGenerator from './components/CustomStoryGenerator';
 import CustomStoryResult from './components/CustomStoryResult';
 import FreeFantasyGenerator from './components/FreeFantasyGenerator';
 import FreeFantasyResult from './components/FreeFantasyResult';
+import AdminAnalytics from './components/AdminAnalytics';
 
 function App() {
   const location = useLocation();
@@ -144,6 +145,12 @@ function App() {
           <Route 
             path="/free-fantasy-result" 
             element={<FreeFantasyResult />} 
+          />
+          
+          {/* Route cachée pour l'administration */}
+          <Route 
+            path="/admin-analytics-secret-2025" 
+            element={<AdminAnalytics />} 
           />
         </Routes>
       </main>

@@ -4,11 +4,12 @@ import profileService from '../services/profileService';
 import ReadingTimeSlider from './ReadingTimeSlider';
 import EroticismLevelSlider from './EroticismLevelSlider';
 import fondStart from '/fond start.png';
+import { logUserAction, ANALYTICS_ACTIONS } from '../services/analyticsService';
 
 const FreeFantasyGenerator = () => {
   const navigate = useNavigate();
   const [fantasyText, setFantasyText] = useState('');
-  const [readingTime, setReadingTime] = useState(10);
+  const [readingTime, setReadingTime] = useState(2);
   const [eroticismLevel, setEroticismLevel] = useState(2); // Niveau modéré par défaut
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -31,6 +32,19 @@ const FreeFantasyGenerator = () => {
     // Récupérer le profil s'il existe
     const activeProfileId = profileService.getActiveProfile();
     const existingProfile = activeProfileId ? profileService.getProfileById(activeProfileId) : null;
+    
+    // Log du fantasme libre écrit
+    logUserAction(
+      ANALYTICS_ACTIONS.FREE_FANTASY_WRITTEN,
+      'FreeFantasyGenerator',
+      {
+        fantasyText: fantasyText.substring(0, 200) + (fantasyText.length > 200 ? '...' : ''), // Limiter à 200 caractères pour la confidentialité
+        fantasyLength: fantasyText.length,
+        readingTime,
+        eroticismLevel,
+        hasProfile: !!existingProfile
+      }
+    );
     
     // Naviguer vers la page de résultat avec le texte du fantasme et le temps de lecture
     navigate('/free-fantasy-result', { 

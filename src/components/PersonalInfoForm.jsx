@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import fondStart from '/fond start.png';
 import profileService from '../services/profileService';
+import { logUserAction, ANALYTICS_ACTIONS } from '../services/analyticsService';
 
 const PersonalInfoForm = ({ onSubmit }) => {
   const navigate = useNavigate();
@@ -10,6 +11,7 @@ const PersonalInfoForm = ({ onSubmit }) => {
   const [profileId, setProfileId] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
+    email: '',
     ageRange: '18 - 25 ans',
     gender: 'Femme',
     orientation: 'Bi-sexuelle'
@@ -29,6 +31,7 @@ const PersonalInfoForm = ({ onSubmit }) => {
       if (profileData) {
         setFormData({
           name: profileData.name || '',
+          email: profileData.email || '',
           ageRange: profileData.ageRange || '18 - 25 ans',
           gender: profileData.gender || 'Femme',
           orientation: profileData.orientation || 'Bi-sexuelle'
@@ -51,10 +54,28 @@ const PersonalInfoForm = ({ onSubmit }) => {
     if (isEditMode && profileId) {
       // Mettre à jour le profil existant
       profileService.updateProfile(profileId, formData);
+      
+      // Log de la mise à jour du profil
+      logUserAction(
+        ANALYTICS_ACTIONS.PROFILE_UPDATED,
+        'PersonalInfoForm',
+        { profileId, ...formData },
+        { isEditMode: true }
+      );
+      
       navigate('/home'); // Retourner à la page d'accueil après modification
     } else {
       // Créer un nouveau profil
       const newProfile = profileService.saveProfile(formData);
+      
+      // Log de la création du profil
+      logUserAction(
+        ANALYTICS_ACTIONS.PROFILE_CREATED,
+        'PersonalInfoForm',
+        { profileId: newProfile.id, ...formData },
+        { isEditMode: false }
+      );
+      
       if (onSubmit) {
         onSubmit(formData);
       }
@@ -109,6 +130,25 @@ const PersonalInfoForm = ({ onSubmit }) => {
                   />
                   <p className="text-xs text-amber-200/70 mt-1">
                     sera utilisé pour la personnalisation des histoires
+                  </p>
+                </div>
+
+                <div>
+                  <label htmlFor="email" className="block text-amber-100 mb-2">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    placeholder="magalie@exemple.com"
+                    className="w-full px-3 py-2 bg-amber-200/30 border border-amber-300/50 rounded-md text-white placeholder-amber-200/70 focus:outline-none focus:ring-2 focus:ring-amber-300"
+                    required
+                  />
+                  <p className="text-xs text-amber-200/70 mt-1">
+                    pour ne rien manquer de nos mises à jour et améliorations
                   </p>
                 </div>
 

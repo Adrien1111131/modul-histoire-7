@@ -10,7 +10,7 @@ import grokApi from '../services/grokApi';
 const RandomStoryGenerator = ({ onSubmit }) => {
   const navigate = useNavigate();
   const [selectedKinks, setSelectedKinks] = useState([]);
-  const [readingTime, setReadingTime] = useState(10);
+  const [readingTime, setReadingTime] = useState(2);
   const [eroticismLevel, setEroticismLevel] = useState(2); // Niveau modéré par défaut
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -111,7 +111,7 @@ const RandomStoryGenerator = ({ onSubmit }) => {
           orientation: profileToUse.orientation || 'hétérosexuelle'
         },
         selectedKinks: randomKinks,
-        readingTime: Math.floor(Math.random() * 6) + 5, // 5 à 11 minutes
+        readingTime: Math.floor(Math.random() * 3) + 1, // 1 à 3 minutes
         eroticismLevel: Math.floor(Math.random() * 3) + 1, // Niveau d'érotisme aléatoire (1-3)
         dominantStyle: profileToUse.dominantStyle || "VISUEL",
         excitationType: profileToUse.excitationType || "ÉMOTIONNEL",

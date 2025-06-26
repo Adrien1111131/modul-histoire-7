@@ -11,7 +11,7 @@ const CustomStoryGenerator = () => {
   const [selectedSituation, setSelectedSituation] = useState('');
   const [selectedPersonnage, setSelectedPersonnage] = useState('');
   const [selectedLieu, setSelectedLieu] = useState('');
-  const [readingTime, setReadingTime] = useState(10);
+  const [readingTime, setReadingTime] = useState(2);
   const [eroticismLevel, setEroticismLevel] = useState(2); // Niveau modéré par défaut
 
   const handleSubmit = (e) => {

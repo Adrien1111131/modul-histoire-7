@@ -158,7 +158,7 @@ export const generateStory = async (userProfile) => {
  */
 export const generateRandomStory = async (randomStoryData) => {
   try {
-    const { personalInfo, selectedKinks, readingTime = 10, eroticismLevel = 2 } = randomStoryData;
+    const { personalInfo, selectedKinks, readingTime = 2, eroticismLevel = 2 } = randomStoryData;
     
     // Obtenir les instructions d'érotisme
     const eroticismInstructions = promptTemplates.getEroticismInstructions(eroticismLevel);
@@ -264,7 +264,7 @@ export const generateRandomStory = async (randomStoryData) => {
  */
 export const generateCustomStory = async (customChoices, existingProfile = null) => {
   try {
-    const { situation, personnage, lieu, readingTime = 10, eroticismLevel = 2 } = customChoices;
+    const { situation, personnage, lieu, readingTime = 2, eroticismLevel = 2 } = customChoices;
     
     // Obtenir les instructions d'érotisme
     const eroticismInstructions = promptTemplates.getEroticismInstructions(eroticismLevel);
@@ -449,7 +449,7 @@ export const generateCustomStory = async (customChoices, existingProfile = null)
  * @param {number} eroticismLevel - Niveau d'érotisme
  * @returns {Promise<string>} Histoire générée
  */
-export const generateFreeFantasyStory = async (fantasyText, existingProfile = null, readingTime = 10, eroticismLevel = 2) => {
+export const generateFreeFantasyStory = async (fantasyText, existingProfile = null, readingTime = 2, eroticismLevel = 2) => {
   try {
     // Obtenir les instructions d'érotisme
     const eroticismInstructions = promptTemplates.getEroticismInstructions(eroticismLevel);
