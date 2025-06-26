@@ -11,11 +11,26 @@ const AdminAnalytics = () => {
   const [view, setView] = useState('overview'); // 'overview', 'users', 'user-detail'
   const [searchTerm, setSearchTerm] = useState('');
   const [filterAction, setFilterAction] = useState('');
+  const [filterCategory, setFilterCategory] = useState('all'); // 'all', 'profile', 'questionnaire', etc.
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
 
   // Mot de passe simple pour protéger l'accès
   const ADMIN_PASSWORD = 'analytics2025';
+
+  // Catégories d'actions pour le filtrage
+  const actionCategories = {
+    all: 'Toutes les actions',
+    profile: 'Profil',
+    questionnaire: 'Questionnaires',
+    guided: 'Mode Guidé',
+    mystery: 'Mode Mystère',
+    kinks: 'Mode Fantasmes',
+    free: 'Mode Libre',
+    parameters: 'Paramètres',
+    generation: 'Génération',
+    navigation: 'Navigation'
+  };
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -73,23 +88,34 @@ const AdminAnalytics = () => {
     return action.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
   };
 
+  const getActionCategory = (action) => {
+    if (action.startsWith('profile_')) return 'profile';
+    if (action.includes('questionnaire') || action.includes('question_answered')) return 'questionnaire';
+    if (action.startsWith('guided_')) return 'guided';
+    if (action.startsWith('mystery_')) return 'mystery';
+    if (action.includes('kink')) return 'kinks';
+    if (action.includes('free_fantasy')) return 'free';
+    if (action.includes('time') || action.includes('level')) return 'parameters';
+    if (action.includes('story_') || action.includes('generated')) return 'generation';
+    if (action.includes('visited') || action.includes('clicked') || action.includes('modal')) return 'navigation';
+    return 'all';
+  };
+
   const getActionColor = (action) => {
+    const category = getActionCategory(action);
     const colors = {
-      'profile_created': 'bg-green-100 text-green-800',
-      'profile_updated': 'bg-blue-100 text-blue-800',
-      'story_generated': 'bg-purple-100 text-purple-800',
-      'questionnaire_completed': 'bg-orange-100 text-orange-800',
-      'page_visited': 'bg-gray-100 text-gray-800',
-      'button_clicked': 'bg-yellow-100 text-yellow-800'
+      profile: 'bg-green-100 text-green-800',
+      questionnaire: 'bg-blue-100 text-blue-800',
+      guided: 'bg-purple-100 text-purple-800',
+      mystery: 'bg-pink-100 text-pink-800',
+      kinks: 'bg-red-100 text-red-800',
+      free: 'bg-yellow-100 text-yellow-800',
+      parameters: 'bg-indigo-100 text-indigo-800',
+      generation: 'bg-cyan-100 text-cyan-800',
+      navigation: 'bg-gray-100 text-gray-800'
     };
     
-    for (const [key, color] of Object.entries(colors)) {
-      if (action.includes(key.split('_')[0])) {
-        return color;
-      }
-    }
-    
-    return 'bg-gray-100 text-gray-800';
+    return colors[category] || 'bg-gray-100 text-gray-800';
   };
 
   const filteredUsers = users.filter(user => 
@@ -97,9 +123,11 @@ const AdminAnalytics = () => {
     user.userId.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const filteredLogs = userLogs.filter(log => 
-    filterAction === '' || log.action === filterAction
-  );
+  const filteredLogs = userLogs.filter(log => {
+    if (filterAction !== '') return log.action === filterAction;
+    if (filterCategory !== 'all') return getActionCategory(log.action) === filterCategory;
+    return true;
+  });
 
   if (!isAuthenticated) {
     return (
@@ -211,7 +239,9 @@ const AdminAnalytics = () => {
                     .slice(0, 10)
                     .map(([action, count]) => (
                       <div key={action} className="flex justify-between items-center">
-                        <span className="text-sm text-gray-600">{formatActionName(action)}</span>
+                        <span className={`text-sm px-2 py-1 rounded-full ${getActionColor(action)}`}>
+                          {formatActionName(action)}
+                        </span>
                         <span className="font-medium">{count}</span>
                       </div>
                     ))}
@@ -262,6 +292,12 @@ const AdminAnalytics = () => {
                         Utilisatrice
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Email
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Profil
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Actions
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -281,9 +317,16 @@ const AdminAnalytics = () => {
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div>
                             <div className="text-sm font-medium text-gray-900">{user.userName}</div>
-                            <div className="text-sm text-gray-500">{user.userGender}</div>
                             <div className="text-xs text-gray-400">{user.userId}</div>
                           </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {user.userEmail || 'Non spécifié'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">{user.userGender}</div>
+                          <div className="text-sm text-gray-500">{user.userAgeRange}</div>
+                          <div className="text-sm text-gray-500">{user.userOrientation}</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                           {user.totalActions}
@@ -330,19 +373,57 @@ const AdminAnalytics = () => {
                 </button>
               </div>
 
-              <div className="mb-4">
+              {/* Informations utilisatrice */}
+              <div className="mb-6 grid grid-cols-2 gap-4">
+                <div>
+                  <h4 className="text-sm font-medium text-gray-700 mb-2">Profil</h4>
+                  <div className="space-y-1">
+                    <p className="text-sm">Email: {selectedUser.userEmail}</p>
+                    <p className="text-sm">Genre: {selectedUser.userGender}</p>
+                    <p className="text-sm">Âge: {selectedUser.userAgeRange}</p>
+                    <p className="text-sm">Orientation: {selectedUser.userOrientation}</p>
+                  </div>
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium text-gray-700 mb-2">Préférences</h4>
+                  <div className="space-y-1">
+                    <p className="text-sm">Style dominant: {selectedUser.dominantStyle}</p>
+                    <p className="text-sm">Type d'excitation: {selectedUser.excitationType}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Filtres */}
+              <div className="mb-4 flex space-x-4">
+                <select
+                  value={filterCategory}
+                  onChange={(e) => {
+                    setFilterCategory(e.target.value);
+                    setFilterAction('');
+                  }}
+                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  {Object.entries(actionCategories).map(([key, label]) => (
+                    <option key={key} value={key}>{label}</option>
+                  ))}
+                </select>
+
                 <select
                   value={filterAction}
                   onChange={(e) => setFilterAction(e.target.value)}
                   className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">Toutes les actions</option>
-                  {[...new Set(userLogs.map(log => log.action))].map(action => (
-                    <option key={action} value={action}>{formatActionName(action)}</option>
-                  ))}
+                  {[...new Set(userLogs
+                    .filter(log => filterCategory === 'all' || getActionCategory(log.action) === filterCategory)
+                    .map(log => log.action))]
+                    .map(action => (
+                      <option key={action} value={action}>{formatActionName(action)}</option>
+                    ))}
                 </select>
               </div>
 
+              {/* Timeline des actions */}
               <div className="space-y-3 max-h-96 overflow-y-auto">
                 {filteredLogs.map((log) => (
                   <div key={log.id} className="border border-gray-200 rounded-lg p-4">

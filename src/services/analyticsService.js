@@ -38,7 +38,14 @@ const getCurrentUser = () => {
         return {
           userId: profile.id,
           userName: profile.personalInfo?.name || profile.name || 'Utilisateur',
-          userGender: profile.personalInfo?.gender || profile.gender || 'non-spécifié'
+          userEmail: profile.personalInfo?.email || 'non-spécifié',
+          userGender: profile.personalInfo?.gender || profile.gender || 'non-spécifié',
+          userAgeRange: profile.personalInfo?.ageRange || 'non-spécifié',
+          userOrientation: profile.personalInfo?.orientation || 'non-spécifié',
+          dominantStyle: profile.dominantStyle || 'non-spécifié',
+          excitationType: profile.excitationType || 'non-spécifié',
+          sensoryAnswers: profile.sensoryAnswers || {},
+          excitationAnswers: profile.excitationAnswers || {}
         };
       }
     }
@@ -47,14 +54,28 @@ const getCurrentUser = () => {
     return {
       userId: 'anonymous',
       userName: 'Utilisateur Anonyme',
-      userGender: 'non-spécifié'
+      userEmail: 'non-spécifié',
+      userGender: 'non-spécifié',
+      userAgeRange: 'non-spécifié',
+      userOrientation: 'non-spécifié',
+      dominantStyle: 'non-spécifié',
+      excitationType: 'non-spécifié',
+      sensoryAnswers: {},
+      excitationAnswers: {}
     };
   } catch (error) {
     console.error('Erreur lors de la récupération de l\'utilisateur:', error);
     return {
       userId: 'anonymous',
       userName: 'Utilisateur Anonyme',
-      userGender: 'non-spécifié'
+      userEmail: 'non-spécifié',
+      userGender: 'non-spécifié',
+      userAgeRange: 'non-spécifié',
+      userOrientation: 'non-spécifié',
+      dominantStyle: 'non-spécifié',
+      excitationType: 'non-spécifié',
+      sensoryAnswers: {},
+      excitationAnswers: {}
     };
   }
 };
@@ -284,29 +305,47 @@ export const ANALYTICS_ACTIONS = {
   // Questionnaires
   SENSORY_QUESTION_ANSWERED: 'sensory_question_answered',
   SENSORY_QUESTIONNAIRE_COMPLETED: 'sensory_questionnaire_completed',
+  SENSORY_QUESTIONNAIRE_SKIPPED: 'sensory_questionnaire_skipped',
   EXCITATION_QUESTION_ANSWERED: 'excitation_question_answered',
   EXCITATION_QUESTIONNAIRE_COMPLETED: 'excitation_questionnaire_completed',
+  EXCITATION_QUESTIONNAIRE_SKIPPED: 'excitation_questionnaire_skipped',
   
-  // Générateurs d'histoires
-  STORY_MODE_SELECTED: 'story_mode_selected',
+  // Mode Guidé
+  GUIDED_SITUATION_SELECTED: 'guided_situation_selected',
+  GUIDED_CHARACTER_SELECTED: 'guided_character_selected',
+  GUIDED_LOCATION_SELECTED: 'guided_location_selected',
+  GUIDED_STORY_CONFIGURED: 'guided_story_configured',
+  
+  // Mode Mystère
   MYSTERY_SETTINGS_CONFIGURED: 'mystery_settings_configured',
-  CUSTOM_STORY_CONFIGURED: 'custom_story_configured',
-  RANDOM_STORY_CONFIGURED: 'random_story_configured',
+  MYSTERY_STORY_GENERATED: 'mystery_story_generated',
+  
+  // Mode Fantasmes
+  KINK_SELECTED: 'kink_selected',
+  KINK_DESELECTED: 'kink_deselected',
+  KINKS_STORY_CONFIGURED: 'kinks_story_configured',
+  
+  // Mode Libre
+  FREE_FANTASY_STARTED: 'free_fantasy_started',
   FREE_FANTASY_WRITTEN: 'free_fantasy_written',
+  FREE_FANTASY_SUBMITTED: 'free_fantasy_submitted',
   
   // Paramètres
   READING_TIME_CHANGED: 'reading_time_changed',
   EROTICISM_LEVEL_CHANGED: 'eroticism_level_changed',
-  KINK_SELECTED: 'kink_selected',
-  KINK_DESELECTED: 'kink_deselected',
   
   // Génération
+  STORY_GENERATION_STARTED: 'story_generation_started',
   STORY_GENERATED: 'story_generated',
   STORY_GENERATION_FAILED: 'story_generation_failed',
+  STORY_VIEWED: 'story_viewed',
+  STORY_SHARED: 'story_shared',
   
   // Navigation
   PAGE_VISITED: 'page_visited',
-  BUTTON_CLICKED: 'button_clicked'
+  BUTTON_CLICKED: 'button_clicked',
+  MODAL_OPENED: 'modal_opened',
+  MODAL_CLOSED: 'modal_closed'
 };
 
 export default {
