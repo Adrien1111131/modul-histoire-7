@@ -8,6 +8,13 @@ export default defineConfig({
     port: 3000,
     open: true
   },
-  // Configuration pour Vercel (commenter la base pour GitHub Pages)
-  // base: '/module-histoire/'
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+    rollupOptions: {
+      output: {
+        manualChunks: undefined
+      }
+    }
+  }
 })
