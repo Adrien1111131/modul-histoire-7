@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import kinkCategories from '../data/kinkCategories';
 import { kinkLevels, kinkPacks } from '../data/kinkLevels';
-import KinkCard from './KinkCard';
+import KinkRow from './KinkRow';
 import KinkPack from './KinkPack';
 
 const KinkSelector = ({ selectedKinks, setSelectedKinks }) => {
@@ -83,38 +83,55 @@ const KinkSelector = ({ selectedKinks, setSelectedKinks }) => {
     setSearchTerm(e.target.value);
   };
 
+  // Grouper les catégories par thème
+  const categoryGroups = {
+    'Romantique & Sensuel': kinkCategories.filter(cat => 
+      ['Dynamiques de pouvoir', 'Jeux de sensation', 'Positions et techniques'].includes(cat.name)
+    ),
+    'Passionné & Intense': kinkCategories.filter(cat => 
+      ['Pratiques physiques', 'Contrôle de l\'orgasme', 'Jeux sexuels spécifiques'].includes(cat.name)
+    ),
+    'Jeux de Rôle & Scénarios': kinkCategories.filter(cat => 
+      ['Jeux de rôle et scénarios', 'Jeux psychologiques et émotionnels'].includes(cat.name)
+    ),
+    'Lieux & Contextes': kinkCategories.filter(cat => 
+      ['Contextes et lieux', 'Dynamiques relationnelles'].includes(cat.name)
+    ),
+    'Fétichismes & Spécialités': kinkCategories.filter(cat => 
+      ['Fétichismes et adoration', 'Transformation et identité'].includes(cat.name)
+    )
+  };
+
   return (
-    <div className="space-y-8">
-      {/* En-tête et recherche */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-medium text-amber-100">
+    <div className="min-h-screen bg-black/40 backdrop-blur-sm">
+      {/* En-tête fixe */}
+      <div className="sticky top-0 z-50 bg-black/60 backdrop-blur-md px-6 py-4">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-2xl font-bold text-amber-100">
             Sélectionnez vos fantasmes
           </h2>
-          <div className="text-sm text-amber-200">
-            {selectedKinks.length}/{maxSelections} sélectionnés
+          <div className="flex items-center space-x-4">
+            <div className="text-sm text-amber-200">
+              {selectedKinks.length}/{maxSelections} sélectionnés
+            </div>
+            <input
+              type="text"
+              placeholder="Rechercher..."
+              value={searchTerm}
+              onChange={handleSearchChange}
+              className="px-4 py-2 w-48 bg-amber-200/10 border border-amber-300/30 rounded-full text-white placeholder-amber-200/50 focus:outline-none focus:ring-2 focus:ring-amber-300/50"
+            />
           </div>
         </div>
 
-        <input
-          type="text"
-          placeholder="Rechercher une catégorie..."
-          value={searchTerm}
-          onChange={handleSearchChange}
-          className="w-full px-4 py-2 bg-amber-200/30 border border-amber-300/50 rounded-md text-white placeholder-amber-200/70 focus:outline-none focus:ring-2 focus:ring-amber-300"
-        />
-      </div>
-
-      {/* Sélecteur de niveau */}
-      <div className="space-y-2">
-        <h3 className="text-lg font-medium text-amber-200">Niveau d'intensité</h3>
+        {/* Sélecteur de niveau */}
         <div className="flex space-x-4">
           {Object.entries(kinkLevels).map(([key, level]) => (
             <button
               key={key}
               onClick={() => setSelectedLevel(key)}
               className={`
-                px-4 py-2 rounded-lg
+                px-4 py-2 rounded-full
                 transition-all duration-300
                 ${level.gradient}
                 ${selectedLevel === key ? level.border + ' border-2' : 'border border-transparent'}
@@ -128,61 +145,65 @@ const KinkSelector = ({ selectedKinks, setSelectedKinks }) => {
         </div>
       </div>
 
-      {/* Packs thématiques */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-medium text-amber-200">Packs thématiques</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {kinkPacks.map(pack => (
-            <KinkPack
-              key={pack.id}
-              pack={pack}
-              isSelected={selectedPack?.id === pack.id}
-              onSelect={handlePackSelect}
-            />
-          ))}
+      {/* Contenu principal défilant */}
+      <div className="space-y-8 pt-4">
+        {/* Packs populaires */}
+        <div className="mb-12">
+          <KinkRow
+            title="🌟 Packs populaires"
+            categories={kinkPacks.map(pack => ({
+              id: pack.id,
+              name: pack.name,
+              subcategories: pack.categories.map(id => 
+                kinkCategories.find(cat => cat.id === id)?.name || ''
+              )
+            }))}
+            selectedKinks={selectedKinks}
+            onKinkToggle={handleKinkToggle}
+            level={selectedLevel}
+          />
         </div>
-      </div>
 
-      {/* Catégories individuelles */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-medium text-amber-200">Toutes les catégories</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {getFilteredCategories().map(category => (
-            <KinkCard
-              key={category.id}
-              category={category}
-              level={selectedLevel}
-              isSelected={selectedKinks.includes(category.name)}
-              onSelect={() => handleKinkToggle(category.name)}
-              isDisabled={selectedKinks.length >= maxSelections && !selectedKinks.includes(category.name)}
-            />
-          ))}
-        </div>
-      </div>
+        {/* Rangées par thème */}
+        {Object.entries(categoryGroups).map(([title, categories]) => (
+          <KinkRow
+            key={title}
+            title={title}
+            categories={categories}
+            selectedKinks={selectedKinks}
+            onKinkToggle={handleKinkToggle}
+            level={selectedLevel}
+          />
+        ))}
 
-      {/* Sélections actuelles */}
-      {selectedKinks.length > 0 && (
-        <div className="space-y-2">
-          <h3 className="text-lg font-medium text-amber-200">Sélections actuelles</h3>
-          <div className="flex flex-wrap gap-2">
-            {selectedKinks.map(kink => (
-              <span 
-                key={kink} 
-                className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-amber-500/30 text-amber-100"
-              >
-                {kink}
-                <button 
-                  type="button"
-                  onClick={() => handleKinkToggle(kink)}
-                  className="ml-1.5 inline-flex items-center justify-center w-4 h-4 rounded-full text-amber-300 hover:bg-amber-600/50 hover:text-amber-100 focus:outline-none"
-                >
-                  &times;
-                </button>
-              </span>
-            ))}
+        {/* Sélections actuelles */}
+        {selectedKinks.length > 0 && (
+          <div className="fixed bottom-0 left-0 right-0 bg-black/80 backdrop-blur-md p-4">
+            <div className="max-w-7xl mx-auto">
+              <div className="flex items-center space-x-2">
+                <h3 className="text-lg font-medium text-amber-200">Sélections :</h3>
+                <div className="flex flex-wrap gap-2">
+                  {selectedKinks.map(kink => (
+                    <span 
+                      key={kink} 
+                      className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-amber-500/30 text-amber-100"
+                    >
+                      {kink}
+                      <button 
+                        type="button"
+                        onClick={() => handleKinkToggle(kink)}
+                        className="ml-1.5 inline-flex items-center justify-center w-4 h-4 rounded-full text-amber-300 hover:bg-amber-600/50 hover:text-amber-100 focus:outline-none"
+                      >
+                        &times;
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
