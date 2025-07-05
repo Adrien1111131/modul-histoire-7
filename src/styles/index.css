@@ -2,216 +2,66 @@
 @tailwind components;
 @tailwind utilities;
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* Styles de base */
+body {
+  @apply bg-gray-100;
 }
 
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* Composants */
+.btn-primary {
+  @apply bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors duration-200;
 }
 
-.animate-fadeIn {
-  animation: fadeIn 0.5s ease-out forwards;
+.btn-secondary {
+  @apply bg-gray-200 text-gray-700 px-6 py-2 rounded-md hover:bg-gray-300 transition-colors duration-200;
 }
 
-.animate-slideIn {
-  animation: slideIn 0.3s ease-out forwards;
+.question-card {
+  @apply bg-white rounded-lg shadow-md p-8 my-8;
 }
 
-@layer base {
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-josefin tracking-wide;
-  }
-
-  body {
-    @apply font-quicksand;
-  }
+/* Animation machine à écrire */
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
 }
 
-@layer components {
-  .title-main {
-    @apply font-josefin font-semibold text-3xl tracking-wider;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-
-  .title-card {
-    @apply font-montserrat font-semibold uppercase tracking-wider transition-all duration-300;
-  }
-
-  .description-card {
-    @apply font-quicksand font-light leading-relaxed opacity-90;
-  }
-
-  .button-text {
-    @apply font-montserrat font-medium uppercase tracking-wider text-sm transition-all duration-300;
-  }
-
-  .hover-scale {
-    @apply transition-transform duration-300 hover:scale-105;
-  }
-
-  .text-shadow-sm {
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  }
+@keyframes blink-caret {
+  from, to { border-color: transparent }
+  50% { border-color: #2563eb }
 }
 
-/* Textures de fond */
-.bg-pattern {
-  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+.typewriter-container {
+  @apply flex justify-center items-center;
 }
 
-/* Fond noir avec motif floral pour toute l'application */
-.bg-floral {
-  @apply bg-black;
-  background-image: url('/Mask group.png');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  position: fixed;
-  inset: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: -1;
+.typewriter-text {
+  @apply text-2xl font-bold text-blue-600;
+  overflow: hidden;
+  border-right: .15em solid #2563eb;
+  white-space: nowrap;
+  margin: 0 auto;
+  letter-spacing: .15em;
+  animation: 
+    typing 3.5s steps(40, end),
+    blink-caret .75s step-end infinite;
 }
 
-/* Classe pour le contenu principal avec filtres pour rendre le motif floral plus visible */
-.bg-floral-content {
-  @apply relative;
+/* Styles pour le conteneur de chargement */
+.loading-container {
+  @apply bg-gradient-to-r from-blue-500 to-purple-600 p-8 rounded-lg shadow-lg text-white;
 }
 
-/* Classe spécifique pour appliquer les filtres au contenu principal uniquement */
-.bg-floral-content > *:not(:first-child) {
-  filter: brightness(1.4) contrast(1.5);
-  position: relative;
+.loading-text {
+  @apply text-lg opacity-80;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-/* Overlay très léger pour améliorer la visibilité du motif floral */
-.bg-floral-content > *:not(:first-child)::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background-color: rgba(255, 255, 255, 0.05);
-  mix-blend-mode: overlay;
-}
-
-/* Overlay pour améliorer la lisibilité sur le fond - supprimé pour rendre le motif plus visible */
-
-/* Media queries pour la responsivité */
-@media (max-width: 768px) {
-  .bg-floral {
-    background-attachment: scroll; /* Meilleure performance sur mobile */
-  }
-  
-  .title-main {
-    @apply text-2xl; /* Titre plus petit sur mobile */
-  }
-  
-  .description-card {
-    @apply text-sm; /* Texte plus petit sur mobile */
-  }
-}
-
-@media (max-width: 480px) {
-  .title-main {
-    @apply text-xl; /* Titre encore plus petit sur très petit écran */
-  }
-  
-  .button-text {
-    @apply text-xs; /* Boutons plus petits sur très petit écran */
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
+@keyframes pulse {
+  0%, 100% {
     opacity: 1;
   }
-}
-
-@keyframes slideIn {
-  from {
-    transform: translateY(-20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-.animate-fadeIn {
-  animation: fadeIn 0.5s ease-out forwards;
-}
-
-.animate-slideIn {
-  animation: slideIn 0.5s ease-out forwards;
-}
-
-@layer components {
-  .btn-primary {
-    @apply px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors;
-  }
-  
-  .btn-secondary {
-    @apply px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors;
-  }
-
-  .input-field {
-    @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500;
-  }
-
-  .question-card {
-    @apply bg-white p-6 rounded-lg shadow-md mb-4;
-  }
-
-  .radio-option {
-    @apply flex items-center space-x-3 p-3 rounded-md hover:bg-gray-50 cursor-pointer;
-  }
-  
-  /* Style amélioré pour le bouton de profil */
-  .profile-button {
-    color: white;
-    background: rgba(208, 175, 142, 0.7);
-    border: 2px solid #d5b394;
-    border-radius: 30px;
-    padding: 12px 24px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    transition: all 0.3s ease;
-    display: inline-block;
-    text-align: center;
-    cursor: pointer;
-    min-width: 200px;
-  }
-
-  .profile-button:hover {
-    background: rgba(208, 175, 142, 0.9);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
-  }
-  
-  .profile-button:active {
-    transform: translateY(1px);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  50% {
+    opacity: .5;
   }
 }
