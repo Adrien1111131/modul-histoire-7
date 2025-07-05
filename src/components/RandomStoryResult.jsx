@@ -98,15 +98,12 @@ const RandomStoryResult = ({ randomStoryData: propRandomStoryData }) => {
   if (loading) {
     return (
       <div className="max-w-2xl mx-auto">
-        <div className="question-card">
-          <div className="loading-container">
-            <div className="typewriter-container mb-6">
-              <p className="typewriter-text">Création de votre histoire en cours...</p>
-            </div>
-            <div className="space-y-4">
-              <p className="loading-text">Je laisse mon imagination s'exprimer...</p>
-              <p className="loading-text">J'explore vos préférences...</p>
-              <p className="loading-text">Je tisse une histoire unique pour vous...</p>
+        <div className="question-card text-center">
+          <div className="space-y-6">
+            <span className="text-4xl heart-spin inline-block">❤️</span>
+            <h2 className="text-2xl font-bold">Création de votre histoire en cours...</h2>
+            <div className="typing-container">
+              <p className="typing-text">Cela peut prendre quelques instants</p>
             </div>
           </div>
         </div>

@@ -20,48 +20,39 @@ body {
   @apply bg-white rounded-lg shadow-md p-8 my-8;
 }
 
-/* Animation machine à écrire */
+/* Animation du cœur */
+.heart-spin {
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Animation du texte qui s'écrit */
+.typing-container {
+  @apply flex justify-center overflow-hidden;
+}
+
+.typing-text {
+  @apply text-gray-600 overflow-hidden whitespace-nowrap;
+  border-right: 2px solid #2563eb;
+  animation: typing 4s steps(40) infinite;
+  max-width: fit-content;
+}
+
 @keyframes typing {
-  from { width: 0 }
-  to { width: 100% }
-}
-
-@keyframes blink-caret {
-  from, to { border-color: transparent }
-  50% { border-color: #2563eb }
-}
-
-.typewriter-container {
-  @apply flex justify-center items-center;
-}
-
-.typewriter-text {
-  @apply text-2xl font-bold text-blue-600;
-  overflow: hidden;
-  border-right: .15em solid #2563eb;
-  white-space: nowrap;
-  margin: 0 auto;
-  letter-spacing: .15em;
-  animation: 
-    typing 3.5s steps(40, end),
-    blink-caret .75s step-end infinite;
-}
-
-/* Styles pour le conteneur de chargement */
-.loading-container {
-  @apply bg-gradient-to-r from-blue-500 to-purple-600 p-8 rounded-lg shadow-lg text-white;
-}
-
-.loading-text {
-  @apply text-lg opacity-80;
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
+  0%, 100% { 
+    width: 0;
+    border-color: transparent;
   }
-  50% {
-    opacity: .5;
+  10%, 40% { 
+    width: 100%;
+    border-color: #2563eb;
+  }
+  50%, 90% { 
+    width: 0;
+    border-color: transparent;
   }
 }
