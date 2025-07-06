@@ -130,7 +130,7 @@ const RandomStoryGenerator = ({ onSubmit }) => {
             </div>
             
             <div className="relative z-10 p-6">
-              <h2 className="text-4xl font-serif text-center mb-4 text-amber-100 drop-shadow-lg">Fantasmes</h2>
+              <h2 className="text-4xl font-serif text-center mb-4 text-amber-100 drop-shadow-lg">Sélectionnez vos fantasmes</h2>
               
               {error && (
                 <div className="bg-red-500/70 border border-red-400 text-white px-4 py-3 rounded mb-6 shadow-md">
@@ -138,32 +138,7 @@ const RandomStoryGenerator = ({ onSubmit }) => {
                 </div>
               )}
               
-              <p className="text-amber-100 text-base mb-6 font-medium">
-                Créez une histoire sensuelle totalement imprévisible en sélectionnant vos préférences.
-              </p>
-              
-              {activeProfile ? (
-                <div className="bg-amber-800/50 p-4 rounded-lg mb-6 border border-amber-500/30 transition-all duration-300 ease-in-out transform hover:scale-[1.02]">
-                  <h3 className="text-xl font-medium text-amber-200 mb-2">Profil utilisé</h3>
-                  <p className="text-amber-100">
-                    <span className="font-semibold">{activeProfile.name}</span> ({activeProfile.gender})
-                  </p>
-                </div>
-              ) : (
-                <div className="bg-amber-800/50 p-4 rounded-lg mb-6 border border-amber-500/30">
-                  <h3 className="text-xl font-medium text-amber-200 mb-2">Aucun profil utilisé</h3>
-                  <p className="text-amber-100">
-                    Vous pouvez continuer sans profil, mais pour une expérience personnalisée, 
-                    <a href="/personal-info" className="text-amber-300 underline ml-1">créez un profil</a>.
-                  </p>
-                </div>
-              )}
-              
               <div>
-                <h3 className="text-xl font-medium text-amber-200 mb-3 drop-shadow-md">Sélection des Catégories</h3>
-                <p className="text-amber-100 text-sm mb-3">
-                  Sélectionnez les catégories qui vous intéressent pour votre histoire.
-                </p>
                 
                 <KinkSelector 
                   selectedKinks={selectedKinks} 

@@ -15,6 +15,10 @@ const KinkSelector = ({ selectedKinks, setSelectedKinks, onSubmit }) => {
   const getFilteredCategories = () => {
     let filtered = kinkCategories;
     
+    // Filtrer par niveau sélectionné
+    filtered = filtered.filter(category => category.level === selectedLevel);
+    
+    // Filtrer par terme de recherche si présent
     if (searchTerm.trim() !== '') {
       filtered = filtered.filter(category => 
         category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -29,22 +33,25 @@ const KinkSelector = ({ selectedKinks, setSelectedKinks, onSubmit }) => {
 
   // Filtrer les catégories en fonction du terme de recherche
   useEffect(() => {
-    if (searchTerm.trim() === '') {
-      setFilteredCategories(kinkCategories);
-    } else {
-      const filtered = kinkCategories.filter(category => 
+    // Filtrer d'abord par niveau
+    let filtered = kinkCategories.filter(category => category.level === selectedLevel);
+    
+    // Puis par terme de recherche si présent
+    if (searchTerm.trim() !== '') {
+      filtered = filtered.filter(category => 
         category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         category.subcategories.some(subcat => 
           subcat.toLowerCase().includes(searchTerm.toLowerCase())
         )
       );
-      setFilteredCategories(filtered);
       
       // Ouvrir automatiquement les catégories qui contiennent des résultats de recherche
       const categoriesToExpand = filtered.map(cat => cat.id);
       setExpandedCategories(categoriesToExpand);
     }
-  }, [searchTerm]);
+    
+    setFilteredCategories(filtered);
+  }, [searchTerm, selectedLevel]);
 
   // Gérer la sélection/désélection d'une sous-catégorie
   const handleKinkToggle = (kink) => {
@@ -75,10 +82,7 @@ const KinkSelector = ({ selectedKinks, setSelectedKinks, onSubmit }) => {
     <div className="min-h-screen bg-black/40 backdrop-blur-sm p-6">
       {/* En-tête */}
       <div className="max-w-4xl mx-auto mb-8">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-amber-100">
-            Sélectionnez vos fantasmes
-          </h2>
+        <div className="flex items-center justify-end mb-6">
           <div className="flex items-center space-x-4">
             <div className="text-sm text-amber-200">
               {selectedKinks.length}/{maxSelections} sélectionnés

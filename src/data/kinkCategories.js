@@ -3,6 +3,7 @@ const kinkCategories = [
   {
     id: 1,
     name: "Dynamiques de pouvoir",
+    level: "soft",
     subcategories: [
       "Domination douce (Soft Dom)",
       "Domination dure (Hard Dom)",
@@ -20,6 +21,7 @@ const kinkCategories = [
   {
     id: 2,
     name: "Pratiques physiques",
+    level: "medium",
     subcategories: [
       "Fessée (Spanking)",
       "Flagellation (Flogging)",
@@ -35,6 +37,7 @@ const kinkCategories = [
   {
     id: 3,
     name: "Jeux de sensation",
+    level: "soft",
     subcategories: [
       "Jeu avec de la cire (Waxplay)",
       "Jeu de température (Temperature Play)",
@@ -50,6 +53,7 @@ const kinkCategories = [
   {
     id: 4,
     name: "Contrôle et restriction",
+    level: "medium",
     subcategories: [
       "Bondage (Attaches)",
       "Shibari (Art du bondage japonais)",
@@ -66,6 +70,7 @@ const kinkCategories = [
   {
     id: 5,
     name: "Jeux sexuels spécifiques",
+    level: "hard",
     subcategories: [
       "Facesitting (Assis sur le visage)",
       "Pegging (Pénétration avec gode-ceinture)",
@@ -87,6 +92,7 @@ const kinkCategories = [
   {
     id: 6,
     name: "Contrôle de l'orgasme",
+    level: "medium",
     subcategories: [
       "Edging (Contrôle de l'orgasme)",
       "Déni d'orgasme (Orgasm Denial)",
@@ -98,6 +104,7 @@ const kinkCategories = [
   {
     id: 7,
     name: "Jeux psychologiques et émotionnels",
+    level: "hard",
     subcategories: [
       "Taquinerie (Teasing)",
       "Humiliation",
@@ -114,6 +121,7 @@ const kinkCategories = [
   {
     id: 8,
     name: "Jeux de rôle et scénarios",
+    level: "medium",
     subcategories: [
       "Jeu de rôle (Roleplay)",
       "Professeur/Élève (Teacher/Student)",
@@ -128,6 +136,7 @@ const kinkCategories = [
   {
     id: 9,
     name: "Jeux d'animaux et comportements",
+    level: "medium",
     subcategories: [
       "Jeu d'animal de compagnie (Petplay)",
       "Jeu de chiot (Puppy Play)",
@@ -137,6 +146,7 @@ const kinkCategories = [
   {
     id: 10,
     name: "Fétichismes et adoration",
+    level: "medium",
     subcategories: [
       "Adoration des pieds (Foot Worship)",
       "Adoration du corps (Body Worship)",
@@ -151,6 +161,7 @@ const kinkCategories = [
   {
     id: 11,
     name: "Jeux extrêmes ou spécifiques",
+    level: "hard",
     subcategories: [
       "Jeu avec piercing (Piercing Play)",
       "Sadisme",
@@ -161,6 +172,7 @@ const kinkCategories = [
   {
     id: 12,
     name: "Contextes et lieux",
+    level: "soft",
     subcategories: [
       "Nature (Jeu en extérieur)",
       "Bureau (Jeu au bureau)",
@@ -172,6 +184,7 @@ const kinkCategories = [
   {
     id: 13,
     name: "Dynamiques relationnelles",
+    level: "hard",
     subcategories: [
       "Candaulisme (Cuckolding)",
       "Jeu en groupe (Group Play)",
@@ -182,6 +195,7 @@ const kinkCategories = [
   {
     id: 14,
     name: "Transformation et identité",
+    level: "hard",
     subcategories: [
       "Travestissement (Crossdressing)",
       "Jeu de genre (Gender Play)"
@@ -190,6 +204,7 @@ const kinkCategories = [
   {
     id: 15,
     name: "Pratiques sexuelles courantes",
+    level: "soft",
     subcategories: [
       "Fellation (Oral sur homme)",
       "Cunnilingus (Oral sur femme)",
@@ -211,6 +226,7 @@ const kinkCategories = [
   {
     id: 16,
     name: "Positions et techniques",
+    level: "soft",
     subcategories: [
       "Missionnaire",
       "Levrette (Doggy Style)",

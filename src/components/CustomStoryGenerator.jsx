@@ -55,9 +55,7 @@ const CustomStoryGenerator = () => {
           </div>
           
           <div className="relative z-10 p-6">
-            <h2 className="text-3xl font-serif text-center mb-4">Guidée</h2>
-            
-            <p className="text-amber-100 text-sm mb-6">
+            <p className="text-amber-100 text-xl mb-8 text-center font-medium leading-relaxed">
               Laisse-toi guider selon l'ambiance et la situation que tu choisis pour créer une histoire personnalisée.
             </p>
 
