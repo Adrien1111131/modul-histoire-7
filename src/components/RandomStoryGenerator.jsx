@@ -148,7 +148,7 @@ const RandomStoryGenerator = ({ onSubmit }) => {
               
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                  <h3 className="text-xl font-medium text-amber-200 mb-3 drop-shadow-md">Temps de Lecture</h3>
+                  <h3 className="text-xl font-medium text-amber-200 mb-3 drop-shadow-md">Durée</h3>
                   <p className="text-amber-100 text-sm mb-3">
                     Choisissez la durée de lecture souhaitée pour votre histoire.
                   </p>
@@ -160,7 +160,7 @@ const RandomStoryGenerator = ({ onSubmit }) => {
                 </div>
                 
                 <div>
-                  <h3 className="text-xl font-medium text-amber-200 mb-3 drop-shadow-md">Niveau d'Érotisme</h3>
+                  <h3 className="text-xl font-medium text-amber-200 mb-3 drop-shadow-md">Intensité</h3>
                   <p className="text-amber-100 text-sm mb-3">
                     Ajustez l'intensité et le vocabulaire de votre histoire.
                   </p>
@@ -174,7 +174,7 @@ const RandomStoryGenerator = ({ onSubmit }) => {
                 <div className="flex justify-end pt-4">
                   <button
                     type="submit"
-                  className="px-6 py-3 bg-gradient-to-r from-[#e0c29b] via-[#d5b394] to-[#b39274] text-white rounded-full font-medium tracking-wide hover:shadow-xl transition-all duration-300 ease-in-out transform hover:scale-105 hover:from-[#d5b394] hover:to-[#b39274] backdrop-blur-sm border border-white/10"
+                  className="px-6 py-3 bg-gradient-to-r from-[#e0c29b] via-[#d5b394] to-[#b39274] text-black rounded-full font-medium tracking-wide hover:shadow-xl transition-all duration-300 ease-in-out transform hover:scale-105 hover:from-[#d5b394] hover:to-[#b39274] backdrop-blur-sm border border-white/10"
                 >
                   <span className="flex items-center">
                     Crée mon histoire

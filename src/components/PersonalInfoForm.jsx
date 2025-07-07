@@ -108,14 +108,14 @@ const PersonalInfoForm = ({ onSubmit }) => {
                 {isEditMode ? 'Modifier mon profil' : 'Mon profil'}
               </h2>
               
-              <p className="text-amber-100 text-sm mb-8">
+              <p className="text-[#D2C4B5] text-sm mb-8 font-light">
                 Vos données sont strictement confidentielles et entièrement protégées : nous les utilisons 
                 uniquement pour vous offrir un service de qualité, en toute sécurité.
               </p>
               
               <form onSubmit={handleSubmit} className="space-y-8">
                 <div>
-                  <label htmlFor="name" className="block text-amber-100 mb-2">
+                  <label htmlFor="name" className="block text-[#D2C4B5] mb-2 font-light">
                     Prénom
                   </label>
                   <input
@@ -125,16 +125,16 @@ const PersonalInfoForm = ({ onSubmit }) => {
                     value={formData.name}
                     onChange={handleInputChange}
                     placeholder="Magalie"
-                    className="w-full px-3 py-2 bg-amber-200/30 border border-amber-300/50 rounded-md text-white placeholder-amber-200/70 focus:outline-none focus:ring-2 focus:ring-amber-300"
+                    className="w-full px-3 py-2 bg-[#D2C4B5] border-none rounded-lg text-black placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-amber-300"
                     required
                   />
-                  <p className="text-xs text-amber-200/70 mt-1">
+                  <p className="text-xs text-[#D2C4B5]/80 mt-1 font-light">
                     sera utilisé pour la personnalisation des histoires
                   </p>
                 </div>
 
                 <div>
-                  <label htmlFor="email" className="block text-amber-100 mb-2">
+                  <label htmlFor="email" className="block text-[#D2C4B5] mb-2 font-light">
                     Email
                   </label>
                   <input
@@ -144,16 +144,16 @@ const PersonalInfoForm = ({ onSubmit }) => {
                     value={formData.email}
                     onChange={handleInputChange}
                     placeholder="magalie@exemple.com"
-                    className="w-full px-3 py-2 bg-amber-200/30 border border-amber-300/50 rounded-md text-white placeholder-amber-200/70 focus:outline-none focus:ring-2 focus:ring-amber-300"
+                    className="w-full px-3 py-2 bg-[#D2C4B5] border-none rounded-lg text-black placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-amber-300"
                     required
                   />
-                  <p className="text-xs text-amber-200/70 mt-1">
+                  <p className="text-xs text-[#D2C4B5]/80 mt-1 font-light">
                     pour ne rien manquer de nos mises à jour et améliorations
                   </p>
                 </div>
 
                 <div>
-                  <label htmlFor="ageRange" className="block text-amber-100 mb-2">
+                  <label htmlFor="ageRange" className="block text-[#D2C4B5] mb-2 font-light">
                     Tranche d'âge
                   </label>
                   <select
@@ -161,7 +161,7 @@ const PersonalInfoForm = ({ onSubmit }) => {
                     name="ageRange"
                     value={formData.ageRange}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 bg-amber-200/30 border border-amber-300/50 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-amber-300 appearance-none"
+                    className="w-full px-3 py-2 bg-[#D2C4B5] border-none rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-amber-300 appearance-none"
                     required
                   >
                     <option value="18 - 25 ans">18 - 25 ans</option>
@@ -173,7 +173,7 @@ const PersonalInfoForm = ({ onSubmit }) => {
                 </div>
 
                 <div>
-                  <label htmlFor="gender" className="block text-amber-100 mb-2">
+                  <label htmlFor="gender" className="block text-[#D2C4B5] mb-2 font-light">
                     Sexe
                   </label>
                   <select
@@ -181,7 +181,7 @@ const PersonalInfoForm = ({ onSubmit }) => {
                     name="gender"
                     value={formData.gender}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 bg-amber-200/30 border border-amber-300/50 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-amber-300 appearance-none"
+                    className="w-full px-3 py-2 bg-[#D2C4B5] border-none rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-amber-300 appearance-none"
                     required
                   >
                     <option value="Homme">Homme</option>
@@ -192,7 +192,7 @@ const PersonalInfoForm = ({ onSubmit }) => {
                 </div>
 
                 <div>
-                  <label htmlFor="orientation" className="block text-amber-100 mb-2">
+                  <label htmlFor="orientation" className="block text-[#D2C4B5] mb-2 font-light">
                     Orientation sexuelle
                   </label>
                   <select
@@ -200,7 +200,7 @@ const PersonalInfoForm = ({ onSubmit }) => {
                     name="orientation"
                     value={formData.orientation}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 bg-amber-200/30 border border-amber-300/50 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-amber-300 appearance-none"
+                    className="w-full px-3 py-2 bg-[#D2C4B5] border-none rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-amber-300 appearance-none"
                     required
                   >
                     <option value="Hétérosexuel(le)">Hétérosexuel(le)</option>
@@ -215,13 +215,16 @@ const PersonalInfoForm = ({ onSubmit }) => {
                   <button
                     type="button"
                     onClick={() => navigate(isEditMode ? '/home' : '/')}
-                    className="px-4 py-2 bg-amber-800 text-white rounded-md hover:bg-amber-700 transition-colors"
+                    className="px-6 py-2 bg-[#4A3F35] text-white rounded-full hover:bg-[#5A4F45] transition-colors"
                   >
                     Retour
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-amber-500 text-white rounded-md hover:bg-amber-400 transition-colors"
+                    className="px-6 py-2 text-black rounded-full transition-all duration-300 hover:opacity-80"
+                    style={{ 
+                      background: 'linear-gradient(to right, #d5b394 0%, #c0a081 100%)'
+                    }}
                   >
                     {isEditMode ? 'Enregistrer' : 'Continuer'}
                   </button>

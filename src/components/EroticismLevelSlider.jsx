@@ -51,7 +51,7 @@ const EroticismLevelSlider = ({ value = 2, onChange }) => {
   // Obtenir la couleur de fond du curseur en fonction de la valeur
   const getSliderBackground = () => {
     const percent = calculateThumbPosition(sliderValue);
-    return `linear-gradient(to right, #2563eb 0%, #dc2626 ${percent}%, rgba(255,255,255,0.1) ${percent}%, rgba(255,255,255,0.1) 100%)`;
+    return `linear-gradient(to right, #e0c29b 0%, #d5b394 ${percent}%, rgba(255,255,255,0.1) ${percent}%, rgba(255,255,255,0.1) 100%)`;
   };
 
   // Gérer le début du glissement
@@ -133,7 +133,7 @@ const EroticismLevelSlider = ({ value = 2, onChange }) => {
       >
         {/* Barre de progression avec effet de focus */}
         <div 
-          className="absolute top-1/2 left-0 w-full h-2 -translate-y-1/2 rounded-full cursor-pointer backdrop-blur-sm"
+          className="absolute top-1/2 left-0 w-full h-2 -translate-y-1/2 rounded-full cursor-pointer bg-white/10"
           style={{ 
             background: getSliderBackground(),
             boxShadow: isDragging ? '0 0 0 2px rgba(255, 255, 255, 0.3)' : 'none',
@@ -153,12 +153,9 @@ const EroticismLevelSlider = ({ value = 2, onChange }) => {
             cursor: 'grab',
             userSelect: 'none',
             touchAction: 'none',
-            // Ajouter un halo autour de la flamme pour faciliter le clic
             textShadow: '0 0 10px rgba(255, 165, 0, 0.7)',
-            // Ajouter une zone de clic plus large
             padding: '10px',
             margin: '-10px',
-            // Ajouter un effet de survol
             filter: isDragging ? 'brightness(1.2)' : 'brightness(1)'
           }}
           onMouseDown={handleMouseDown}
@@ -177,7 +174,7 @@ const EroticismLevelSlider = ({ value = 2, onChange }) => {
         value={sliderValue}
         onChange={handleChange}
         className="sr-only"
-        aria-label="Niveau d'érotisme"
+        aria-label="Intensité"
       />
       
       <div className="text-center mt-2">

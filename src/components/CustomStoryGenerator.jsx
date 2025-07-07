@@ -150,7 +150,7 @@ const CustomStoryGenerator = () => {
               {/* Question 4 - Temps de lecture */}
               <div>
                 <h3 className="text-xl font-medium text-amber-200 mb-3">
-                  4. Combien de temps veux-tu que dure ton histoire ?
+                  4. Durée
                 </h3>
                 <ReadingTimeSlider 
                   value={readingTime}
@@ -160,7 +160,7 @@ const CustomStoryGenerator = () => {
 
               <div>
                 <h3 className="text-xl font-medium text-amber-200 mb-3">
-                  5. Quel niveau d'érotisme souhaites-tu ?
+                  5. Intensité
                 </h3>
                 <EroticismLevelSlider 
                   value={eroticismLevel}
@@ -171,7 +171,7 @@ const CustomStoryGenerator = () => {
               <div className="flex justify-end pt-4">
                 <button
                   type="submit"
-                  className="px-6 py-3 bg-gradient-to-r from-[#e0c29b] via-[#d5b394] to-[#b39274] text-white rounded-full font-medium tracking-wide hover:shadow-xl transition-all duration-300 ease-in-out transform hover:scale-105 hover:from-[#d5b394] hover:to-[#b39274] backdrop-blur-sm border border-white/10"
+                  className="px-6 py-3 bg-gradient-to-r from-[#e0c29b] via-[#d5b394] to-[#b39274] text-black rounded-full font-medium tracking-wide hover:shadow-xl transition-all duration-300 ease-in-out transform hover:scale-105 hover:from-[#d5b394] hover:to-[#b39274] backdrop-blur-sm border border-white/10"
                   disabled={!isComplete}
                 >
                   <span className="flex items-center">
