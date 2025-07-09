@@ -1,4 +1,5 @@
 // Service pour capturer et analyser les interactions utilisateur
+import userHistoryService from './userHistoryService';
 
 const ANALYTICS_STORAGE_KEY = 'user_analytics_logs';
 const SESSION_STORAGE_KEY = 'current_session_id';
@@ -334,12 +335,25 @@ export const ANALYTICS_ACTIONS = {
   READING_TIME_CHANGED: 'reading_time_changed',
   EROTICISM_LEVEL_CHANGED: 'eroticism_level_changed',
   
-  // Génération
+  // Génération d'histoires
   STORY_GENERATION_STARTED: 'story_generation_started',
   STORY_GENERATED: 'story_generated',
   STORY_GENERATION_FAILED: 'story_generation_failed',
   STORY_VIEWED: 'story_viewed',
   STORY_SHARED: 'story_shared',
+  STORY_COPIED: 'story_copied',
+  STORY_REGENERATED: 'story_regenerated',
+  
+  // Types d'histoires spécifiques
+  RANDOM_STORY_GENERATED: 'random_story_generated',
+  CUSTOM_STORY_GENERATED: 'custom_story_generated',
+  FREE_FANTASY_STORY_GENERATED: 'free_fantasy_story_generated',
+  
+  // Historique et logging enrichi
+  USER_HISTORY_UPDATED: 'user_history_updated',
+  QUESTIONNAIRE_LOGGED: 'questionnaire_logged',
+  FANTASIES_LOGGED: 'fantasies_logged',
+  FREE_TEXT_LOGGED: 'free_text_logged',
   
   // Navigation
   PAGE_VISITED: 'page_visited',

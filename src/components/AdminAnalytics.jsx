@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import analyticsService from '../services/analyticsService';
+import userHistoryService from '../services/userHistoryService';
+import UserHistoryViewer from './UserHistoryViewer';
 
 const AdminAnalytics = () => {
   const navigate = useNavigate();
@@ -14,6 +16,8 @@ const AdminAnalytics = () => {
   const [filterCategory, setFilterCategory] = useState('all'); // 'all', 'profile', 'questionnaire', etc.
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
+  const [showUserHistory, setShowUserHistory] = useState(false);
+  const [selectedUserForHistory, setSelectedUserForHistory] = useState(null);
 
   // Mot de passe simple pour protéger l'accès
   const ADMIN_PASSWORD = 'analytics2025';
@@ -338,12 +342,23 @@ const AdminAnalytics = () => {
                           {formatDate(user.lastActivity)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                          <button
-                            onClick={() => handleUserSelect(user.userId)}
-                            className="text-blue-600 hover:text-blue-900"
-                          >
-                            Voir détails
-                          </button>
+                          <div className="flex space-x-2">
+                            <button
+                              onClick={() => handleUserSelect(user.userId)}
+                              className="text-blue-600 hover:text-blue-900"
+                            >
+                              Logs
+                            </button>
+                            <button
+                              onClick={() => {
+                                setSelectedUserForHistory({ userId: user.userId, userName: user.userName });
+                                setShowUserHistory(true);
+                              }}
+                              className="text-green-600 hover:text-green-900"
+                            >
+                              Historique complet
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -455,6 +470,18 @@ const AdminAnalytics = () => {
           </div>
         )}
       </div>
+
+      {/* Modal d'historique utilisateur */}
+      {showUserHistory && selectedUserForHistory && (
+        <UserHistoryViewer
+          userId={selectedUserForHistory.userId}
+          userName={selectedUserForHistory.userName}
+          onClose={() => {
+            setShowUserHistory(false);
+            setSelectedUserForHistory(null);
+          }}
+        />
+      )}
     </div>
   );
 };

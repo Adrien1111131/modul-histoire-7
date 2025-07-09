@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import grokApi from '../services/grokApi'
 import { VOCAL_MODULE_URL } from '../config/appConfig'
+import { logUserAction, ANALYTICS_ACTIONS } from '../services/analyticsService'
+import userHistoryService from '../services/userHistoryService'
+import profileService from '../services/profileService'
 
 const RandomStoryResult = ({ randomStoryData: propRandomStoryData }) => {
   const navigate = useNavigate()
@@ -75,6 +78,41 @@ const RandomStoryResult = ({ randomStoryData: propRandomStoryData }) => {
       
       const generatedStory = await grokApi.generateRandomStory(safeRandomStoryData)
       setStory(generatedStory)
+      
+      // Logger l'histoire générée dans l'historique utilisateur
+      const currentUserId = profileService.getActiveProfile()
+      if (currentUserId && generatedStory) {
+        // Enregistrer l'histoire dans l'historique complet
+        userHistoryService.logGeneratedStory(currentUserId, {
+          type: 'random',
+          content: generatedStory,
+          readingTime: safeRandomStoryData.readingTime,
+          eroticismLevel: safeRandomStoryData.eroticismLevel,
+          selectedKinks: safeRandomStoryData.selectedKinks,
+          dominantStyle: safeRandomStoryData.dominantStyle,
+          excitationType: safeRandomStoryData.excitationType
+        })
+        
+        // Logger les fantasmes sélectionnés
+        userHistoryService.logSelectedFantasies(
+          currentUserId, 
+          safeRandomStoryData.selectedKinks.map(kink => ({ subcategory: kink })),
+          'random_story'
+        )
+        
+        // Logger l'action dans analytics
+        logUserAction(
+          ANALYTICS_ACTIONS.RANDOM_STORY_GENERATED,
+          'RandomStoryResult',
+          {
+            storyLength: generatedStory.length,
+            readingTime: safeRandomStoryData.readingTime,
+            eroticismLevel: safeRandomStoryData.eroticismLevel,
+            kinksCount: safeRandomStoryData.selectedKinks.length,
+            selectedKinks: safeRandomStoryData.selectedKinks
+          }
+        )
+      }
     } catch (err) {
       setError('Une erreur est survenue lors de la génération de l\'histoire.')
       console.error('Erreur de génération:', err)
@@ -88,6 +126,19 @@ const RandomStoryResult = ({ randomStoryData: propRandomStoryData }) => {
       .then(() => {
         setCopySuccess(true)
         setTimeout(() => setCopySuccess(false), 2000)
+        
+        // Logger l'action de copie
+        const currentUserId = profileService.getActiveProfile()
+        if (currentUserId) {
+          logUserAction(
+            ANALYTICS_ACTIONS.STORY_COPIED,
+            'RandomStoryResult',
+            {
+              storyType: 'random',
+              storyLength: story.length
+            }
+          )
+        }
       })
       .catch(err => {
         console.error('Erreur de copie:', err)
@@ -220,7 +271,21 @@ const RandomStoryResult = ({ randomStoryData: propRandomStoryData }) => {
         <div className="flex justify-between pt-6">
           <div className="space-x-4">
             <button
-              onClick={generateStory}
+              onClick={() => {
+                // Logger l'action de régénération
+                const currentUserId = profileService.getActiveProfile()
+                if (currentUserId) {
+                  logUserAction(
+                    ANALYTICS_ACTIONS.STORY_REGENERATED,
+                    'RandomStoryResult',
+                    {
+                      storyType: 'random',
+                      previousStoryLength: story.length
+                    }
+                  )
+                }
+                generateStory()
+              }}
               className="btn-secondary"
             >
               Régénérer

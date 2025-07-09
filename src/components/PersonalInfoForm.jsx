@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import fondStart from '/fond start.png';
 import profileService from '../services/profileService';
 import { logUserAction, ANALYTICS_ACTIONS } from '../services/analyticsService';
+import userHistoryService from '../services/userHistoryService';
 
 const PersonalInfoForm = ({ onSubmit }) => {
   const navigate = useNavigate();
@@ -55,6 +56,9 @@ const PersonalInfoForm = ({ onSubmit }) => {
       // Mettre à jour le profil existant
       profileService.updateProfile(profileId, formData);
       
+      // Mettre à jour le profil dans l'historique utilisateur
+      userHistoryService.updateProfileInHistory(profileId, formData);
+      
       // Log de la mise à jour du profil
       logUserAction(
         ANALYTICS_ACTIONS.PROFILE_UPDATED,
@@ -67,6 +71,9 @@ const PersonalInfoForm = ({ onSubmit }) => {
     } else {
       // Créer un nouveau profil
       const newProfile = profileService.saveProfile(formData);
+      
+      // Initialiser l'historique utilisateur avec le profil
+      userHistoryService.updateProfileInHistory(newProfile.id, formData);
       
       // Log de la création du profil
       logUserAction(

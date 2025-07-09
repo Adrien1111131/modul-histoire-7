@@ -4,6 +4,7 @@ const API_URL = 'https://api.x.ai/v1/chat/completions'
 import predicats from '../data/predicats'
 import * as promptTemplates from './promptTemplates'
 import * as introTemplates from './introductionTemplates'
+import * as optimizedPrompts from './optimizedPrompts'
 
 const N8N_WEBHOOK_URL = 'https://adrien31.app.n8n.cloud/webhook/c6101c94-785c-4eb3-a7e3-f01568125047';
 
@@ -43,7 +44,7 @@ const cleanStoryContent = (content) => {
 };
 
 /**
- * Génère une histoire basée sur le profil utilisateur
+ * Génère une histoire basée sur le profil utilisateur (VERSION OPTIMISÉE)
  * @param {Object} userProfile - Profil de l'utilisateur
  * @returns {Promise<string>} Histoire générée
  */
@@ -55,60 +56,44 @@ export const generateStory = async (userProfile) => {
     const dominantStyle = calculateDominantStyle(sensoryAnswers)
     const excitationType = calculateExcitationType(excitationAnswers)
 
-    // Construire le prompt système
-    const systemPrompt = `
-      ${promptTemplates.baseInstructions}
+    // Créer un profil utilisateur enrichi pour le système optimisé
+    const enrichedProfile = {
+      name: personalInfo.name,
+      gender: personalInfo.gender,
+      orientation: personalInfo.orientation,
+      dominantStyle: dominantStyle,
+      excitationType: excitationType
+    };
+    
+    // Déterminer le niveau d'érotisme basé sur le ton choisi
+    const eroticismLevel = personalInfo.tone === 'doux' ? 1 : 
+                          personalInfo.tone === 'passionne' ? 3 : 2;
+    
+    // Construire le prompt système optimisé
+    const systemPrompt = optimizedPrompts.buildOptimizedPrompt(enrichedProfile, 'guided', eroticismLevel);
+    
+    // Construire le prompt utilisateur optimisé avec les paramètres spécifiques
+    let userPrompt = optimizedPrompts.buildUserPrompt({
+      name: personalInfo.name,
+      gender: personalInfo.gender,
+      orientation: personalInfo.orientation,
+      readingTime: getLengthInMinutes(personalInfo.length)
+    });
+    
+    // Ajouter les paramètres spécifiques du profil guidé
+    userPrompt += `\n\nPARAMÈTRES SPÉCIFIQUES DU PROFIL :
+- Tonalité : ${personalInfo.tone} (${getToneDescription(personalInfo.tone)})
+- Contexte initial : ${personalInfo.context} (${getContextDescription(personalInfo.context)})
+- Longueur souhaitée : ${personalInfo.length} (${getLengthDescription(personalInfo.length)})
+- Style dominant : ${dominantStyle}
+- Type d'excitation : ${excitationType}
 
-      PROFIL DE L'AUDITRICE :
-      - Style dominant : ${dominantStyle.toLowerCase()}
-      - Type d'excitation : ${excitationType.toLowerCase()}
-      
-      ${promptTemplates.narrativeStructure}
-      ${promptTemplates.getIntroductionInstructions({
-        type: personalInfo.context || 'rencontre',
-        dominantStyle: dominantStyle.toLowerCase(),
-        name: personalInfo.name
-      })}
-      ${promptTemplates.phoneticInstructions}
-      ${promptTemplates.hypnoticTechniques}
-      ${promptTemplates.eroticVocabulary}
-      ${promptTemplates.getNarrationInstructions(personalInfo.name)}
-      ${promptTemplates.authenticityRules}
-      ${promptTemplates.progressionInstructions}
-      ${promptTemplates.styleExamples}
-      
-      EXEMPLE D'INTRODUCTION SPÉCIFIQUE :
-      ${introTemplates.generateCompleteIntroduction({
-        type: personalInfo.context || 'rencontre',
-        dominantStyle: dominantStyle.toLowerCase(),
-        name: personalInfo.name
-      })}
-    `;
-
-    // Construire le prompt utilisateur
-    const userPrompt = `
-      Crée une histoire érotique sensuelle pour ${personalInfo.name}, 
-      qui s'identifie comme ${personalInfo.gender} et est ${personalInfo.orientation}. 
-      
-      PARAMÈTRES SPÉCIFIQUES :
-      - Tonalité : ${personalInfo.tone} (${getToneDescription(personalInfo.tone)})
-      - Contexte initial : ${personalInfo.context} (${getContextDescription(personalInfo.context)})
-      - Longueur souhaitée : ${personalInfo.length} (${getLengthDescription(personalInfo.length)})
-      
-      EXEMPLES DE PHRASES À INTÉGRER :
-      Tu mérites ça (...) Chaque frisson (...) Chaque caresse
-      J'ai tellement envie de toi (...) Mais je veux que tu le ressentes, vraiment
-      Tu veux venir pour moi, mon amour ? (...) Vas-y (...) Laisse-toi aller
-      
-      PROGRESSION :
-      1. Ton doux pour poser le contexte initial (${personalInfo.context})
-      2. Alterner ton sensuel et murmures pour la montée du désir
-      3. Utiliser ton intense et excité pour les moments passionnés
-      4. Ton de jouissance pour les moments culminants
-      5. Terminer par ton doux pour la descente émotionnelle
-      
-      N'oublie pas d'utiliser (...) pour les pauses naturelles dans le texte.
-    `;
+PROGRESSION ADAPTÉE :
+1. Ton doux pour poser le contexte initial (${personalInfo.context})
+2. Alterner ton sensuel et murmures pour la montée du désir
+3. Utiliser ton intense et excité pour les moments passionnés
+4. Ton de jouissance pour les moments culminants
+5. Terminer par ton doux pour la descente émotionnelle`;
 
     const messages = [
       { role: "system", content: systemPrompt },
@@ -152,68 +137,34 @@ export const generateStory = async (userProfile) => {
 };
 
 /**
- * Génère une histoire aléatoire basée sur les préférences de l'utilisateur
+ * Génère une histoire aléatoire basée sur les préférences de l'utilisateur (VERSION OPTIMISÉE)
  * @param {Object} randomStoryData - Données pour l'histoire aléatoire
  * @returns {Promise<string>} Histoire générée
  */
 export const generateRandomStory = async (randomStoryData) => {
   try {
-    const { personalInfo, selectedKinks, readingTime = 2, eroticismLevel = 2 } = randomStoryData;
+    const { personalInfo, selectedKinks, readingTime = 2, eroticismLevel = 2, dominantStyle, excitationType } = randomStoryData;
     
-    // Obtenir les instructions d'érotisme
-    const eroticismInstructions = promptTemplates.getEroticismInstructions(eroticismLevel);
-
-    // Construire le prompt système
-    const systemPrompt = `
-      ${promptTemplates.baseInstructions}
-      
-      ${eroticismInstructions}
-
-      CATÉGORIES SÉLECTIONNÉES :
-      ${selectedKinks.join(', ')}
-      
-      TEMPS DE LECTURE SOUHAITÉ : ${readingTime} minutes
-      
-      ${promptTemplates.narrativeStructure}
-      ${promptTemplates.getIntroductionInstructions({
-        type: 'fantasme',
-        dominantStyle: 'visuel',
-        name: personalInfo.name
-      })}
-      ${promptTemplates.phoneticInstructions}
-      ${promptTemplates.progressionInstructions}
-      ${promptTemplates.styleExamples}
-      
-      EXEMPLE D'INTRODUCTION SPÉCIFIQUE :
-      ${introTemplates.generateCompleteIntroduction({
-        type: 'fantasme',
-        dominantStyle: 'visuel',
-        name: personalInfo.name
-      })}
-    `;
-
-    // Construire le prompt utilisateur
-    const userPrompt = `
-      Crée une histoire érotique sensuelle pour ${personalInfo.name}, 
-      qui s'identifie comme ${personalInfo.gender}.
-      
-      CATÉGORIES À INTÉGRER :
-      ${selectedKinks.join(', ')}
-
-      ${promptTemplates.authenticityRules}
-      ${promptTemplates.getNarrationInstructions(personalInfo.name)}
-      ${promptTemplates.eroticVocabulary}
-      ${promptTemplates.hypnoticTechniques}
-      
-      DIRECTIVES SPÉCIFIQUES :
-      1. Intègre toutes les catégories sélectionnées naturellement dans l'histoire
-      2. Crée une histoire réaliste et authentique
-      3. Utilise un langage direct et explicite
-      4. Garde un équilibre entre les sons et le texte
-      
-      N'oublie pas d'utiliser (...) pour les pauses naturelles dans le texte.
-      Utilise les sons phonétisés ("ahhh...", "mmmh...", etc.) et les variations de casse pour le crescendo.
-    `;
+    // Créer un profil utilisateur enrichi pour le système optimisé
+    const userProfile = {
+      name: personalInfo.name,
+      gender: personalInfo.gender,
+      orientation: personalInfo.orientation,
+      dominantStyle: dominantStyle || 'VISUEL',
+      excitationType: excitationType || 'ÉMOTIONNEL'
+    };
+    
+    // Construire le prompt système optimisé
+    const systemPrompt = optimizedPrompts.buildOptimizedPrompt(userProfile, 'random', eroticismLevel);
+    
+    // Construire le prompt utilisateur optimisé
+    const userPrompt = optimizedPrompts.buildUserPrompt({
+      name: personalInfo.name,
+      gender: personalInfo.gender,
+      orientation: personalInfo.orientation,
+      selectedKinks: selectedKinks,
+      readingTime: readingTime
+    });
 
     const messages = [
       { role: "system", content: systemPrompt },
@@ -257,7 +208,7 @@ export const generateRandomStory = async (randomStoryData) => {
 };
 
 /**
- * Génère une histoire personnalisée basée sur les choix de l'utilisateur
+ * Génère une histoire personnalisée basée sur les choix de l'utilisateur (VERSION OPTIMISÉE)
  * @param {Object} customChoices - Choix personnalisés
  * @param {Object} existingProfile - Profil existant (optionnel)
  * @returns {Promise<string>} Histoire générée
@@ -266,142 +217,34 @@ export const generateCustomStory = async (customChoices, existingProfile = null)
   try {
     const { situation, personnage, lieu, readingTime = 2, eroticismLevel = 2 } = customChoices;
     
-    // Obtenir les instructions d'érotisme
-    const eroticismInstructions = promptTemplates.getEroticismInstructions(eroticismLevel);
+    // Créer un profil utilisateur enrichi pour le système optimisé
+    const userProfile = existingProfile ? {
+      name: existingProfile.name,
+      gender: existingProfile.gender,
+      orientation: existingProfile.orientation,
+      dominantStyle: existingProfile.dominantStyle || 'VISUEL',
+      excitationType: existingProfile.excitationType || 'ÉMOTIONNEL'
+    } : {
+      dominantStyle: 'VISUEL',
+      excitationType: 'ÉMOTIONNEL'
+    };
     
-    // Déterminer le style narratif et le vocabulaire si un profil existe
-    let narrativeStyle = '';
-    let vocabulaireStyle = '';
+    // Construire le prompt système optimisé
+    const systemPrompt = optimizedPrompts.buildOptimizedPrompt(userProfile, 'custom', eroticismLevel);
     
-    if (existingProfile) {
-      // Déterminer le style dominant pour le vocabulaire
-      const styleKey = existingProfile.dominantStyle === 'VISUEL' ? 'visuel' : 
-                       existingProfile.dominantStyle === 'AUDITIF' ? 'auditif' : 'kinesthesique';
-      
-      // Récupérer le style prédicat pour ce profil
-      const styleData = predicats[styleKey];
-      
-      // Sélectionner les éléments de vocabulaire
-      const verbes = styleData.verbes.slice(0, 8).join(', ');
-      const adjectifs = styleData.adjectifs.slice(0, 8).join(', ');
-      const expressions = styleData.expressions.slice(0, 5).join(', ');
-      
-      // Récupérer les phrases spécifiques au style
-      const phrasesIntro = styleData.phrases_completes.introduction.slice(0, 2).join('\n');
-      const phrasesAction = styleData.phrases_completes.action.slice(0, 4).join('\n');
-      
-      vocabulaireStyle = `
-      VOCABULAIRE SUGGÉRÉ POUR TON STYLE ${existingProfile.dominantStyle} :
-      
-      VERBES : ${verbes}
-      
-      ADJECTIFS : ${adjectifs}
-      
-      EXPRESSIONS : ${expressions}
-      `;
-
-      narrativeStyle = `
-      STYLE NARRATIF ${existingProfile.dominantStyle} :
-      ${styleData.description}
-
-      PHASES DE L'HISTOIRE :
-      INTRODUCTION : ${styleData.phases.introduction}
-      MONTÉE : ${styleData.phases.montee}
-      CLIMAX : ${styleData.phases.climax}
-
-      EXEMPLES DE PHRASES POUR L'INTRODUCTION :
-      ${phrasesIntro}
-
-      EXEMPLES DE PHRASES POUR L'ACTION :
-      ${phrasesAction}
-
-      TYPE D'EXCITATION ${existingProfile?.excitationType} :
-      - Adapte l'intensité selon le profil
-      - Utilise le style ${existingProfile?.tone}
-      - Longueur ${existingProfile?.length}
-      `;
-    }
-
-    // Construire le prompt système
-    const systemPrompt = `
-      ${promptTemplates.baseInstructions}
-
-      ${eroticismInstructions}
-
-      SCÉNARIO À DÉVELOPPER :
-      - Situation : ${situation.label}
-      - Personnage : ${personnage.label}
-      - Lieu : ${lieu.label}
-      - Temps de lecture souhaité : ${readingTime} minutes
-
-      ${narrativeStyle}
-
-      ${promptTemplates.narrativeStructure}
-      ${promptTemplates.getIntroductionInstructions({
-        type: 'relation',
-        dominantStyle: existingProfile ? existingProfile.dominantStyle.toLowerCase() : 'visuel',
-        name: existingProfile ? existingProfile.name : '',
-        situation: situation.label,
-        personnage: personnage.label,
-        lieu: lieu.label
-      })}
-      ${promptTemplates.phoneticInstructions}
-      ${promptTemplates.styleExamples}
-      
-      EXEMPLE D'INTRODUCTION SPÉCIFIQUE :
-      ${introTemplates.generateCompleteIntroduction({
-        type: 'relation',
-        dominantStyle: existingProfile ? existingProfile.dominantStyle.toLowerCase() : 'visuel',
-        name: existingProfile ? existingProfile.name : '',
-        situation: situation.label,
-        personnage: personnage.label,
-        lieu: lieu.label
-      })}
-    `;
-
-    // Exemple d'introduction adaptée si un profil existe
-    let introExample = '';
-    if (existingProfile) {
-      introExample = `
-      EXEMPLE D'INTRODUCTION ADAPTÉE :
-      ${existingProfile.dominantStyle === 'VISUEL' ? `
-      Dans ${lieu.label}, la lumière joue sur les formes. ${personnage.label} apparaît dans mon champ de vision, et mon regard ne peut plus se détacher...
-      ` : existingProfile.dominantStyle === 'AUDITIF' ? `
-      Dans ${lieu.label}, les sons résonnent doucement. La voix de ${personnage.label} me fait frissonner dès les premiers mots...
-      ` : `
-      Dans ${lieu.label}, l'air caresse ma peau. La présence de ${personnage.label} éveille déjà mes sens...
-      `}
-      `;
-    }
-
-    // Construire le prompt utilisateur
-    const userPrompt = `
-      Crée une histoire érotique ${existingProfile ? `adaptée au style ${existingProfile.dominantStyle.toLowerCase()}` : ''} basée sur :
-      - Une rencontre dans ${lieu.label}
-      - Avec ${personnage.label}
-      - Impliquant ${situation.label}
-      
-      ${existingProfile ? `
-      Utilise :
-      - Un ton ${existingProfile.tone}
-      - Une longueur ${existingProfile.length}
-      - Un style d'excitation ${existingProfile.excitationType.toLowerCase()}
-      
-      ${vocabulaireStyle}
-      ` : ''}
-
-      ${promptTemplates.authenticityRules}
-      ${promptTemplates.getNarrationInstructions(existingProfile ? existingProfile.name : 'l\'auditrice')}
-      ${promptTemplates.eroticVocabulary}
-      ${promptTemplates.hypnoticTechniques}
-      ${promptTemplates.progressionInstructions}
-      
-      N'oublie pas d'utiliser (...) pour les pauses naturelles dans le texte.
-      Utilise les sons phonétisés ("ahhh...", "mmmh...", etc.) et les variations de casse pour le crescendo.
-    `;
+    // Construire le prompt utilisateur optimisé
+    const userPrompt = optimizedPrompts.buildUserPrompt({
+      name: existingProfile?.name || 'l\'auditrice',
+      gender: existingProfile?.gender || 'femme',
+      orientation: existingProfile?.orientation || 'hétérosexuelle',
+      readingTime: readingTime,
+      situation: situation.label,
+      personnage: personnage.label,
+      lieu: lieu.label
+    });
 
     const messages = [
-      { role: "system", content: systemPrompt + introExample },
+      { role: "system", content: systemPrompt },
       { role: "user", content: userPrompt }
     ];
 
@@ -442,7 +285,7 @@ export const generateCustomStory = async (customChoices, existingProfile = null)
 };
 
 /**
- * Génère une histoire basée sur un fantasme libre
+ * Génère une histoire basée sur un fantasme libre (VERSION OPTIMISÉE)
  * @param {string} fantasyText - Texte du fantasme
  * @param {Object} existingProfile - Profil existant (optionnel)
  * @param {number} readingTime - Temps de lecture souhaité
@@ -451,119 +294,29 @@ export const generateCustomStory = async (customChoices, existingProfile = null)
  */
 export const generateFreeFantasyStory = async (fantasyText, existingProfile = null, readingTime = 2, eroticismLevel = 2) => {
   try {
-    // Obtenir les instructions d'érotisme
-    const eroticismInstructions = promptTemplates.getEroticismInstructions(eroticismLevel);
+    // Créer un profil utilisateur enrichi pour le système optimisé
+    const userProfile = existingProfile ? {
+      name: existingProfile.name,
+      gender: existingProfile.gender,
+      orientation: existingProfile.orientation,
+      dominantStyle: existingProfile.dominantStyle || 'VISUEL',
+      excitationType: existingProfile.excitationType || 'ÉMOTIONNEL'
+    } : {
+      dominantStyle: 'VISUEL',
+      excitationType: 'ÉMOTIONNEL'
+    };
     
-    // Déterminer le style narratif et le vocabulaire si un profil existe
-    let narrativeStyle = '';
-    let vocabulaireStyle = '';
+    // Construire le prompt système optimisé
+    const systemPrompt = optimizedPrompts.buildOptimizedPrompt(userProfile, 'free', eroticismLevel);
     
-    if (existingProfile) {
-      // Déterminer le style dominant pour le vocabulaire
-      const styleKey = existingProfile.dominantStyle === 'VISUEL' ? 'visuel' : 
-                       existingProfile.dominantStyle === 'AUDITIF' ? 'auditif' : 'kinesthesique';
-      
-      // Sélectionner des éléments du vocabulaire pour ce style
-      const stylePredicats = predicats[styleKey];
-      const verbes = stylePredicats.verbes.slice(0, 8).join(', ');
-      const adjectifs = stylePredicats.adjectifs.slice(0, 8).join(', ');
-      const expressions = stylePredicats.expressions.slice(0, 5).join(', ');
-      
-      vocabulaireStyle = `
-      VOCABULAIRE SUGGÉRÉ POUR TON STYLE ${existingProfile.dominantStyle} :
-      
-      VERBES : ${verbes}
-      
-      ADJECTIFS : ${adjectifs}
-      
-      EXPRESSIONS : ${expressions}
-      `;
-      
-      narrativeStyle = `
-      STYLE NARRATIF ${existingProfile.dominantStyle} :
-      ${existingProfile.dominantStyle === 'VISUEL' ? `
-      - Accentue les descriptions visuelles
-      - Décris les regards, les postures, la lumière
-      - Utilise un vocabulaire visuel riche
-      - Mets l'accent sur ce qui se voit
-      ` : existingProfile.dominantStyle === 'AUDITIF' ? `
-      - Enrichis avec des sons, soupirs, murmures
-      - Décris les voix, les gémissements
-      - Utilise un vocabulaire sonore riche
-      - Mets l'accent sur ce qui s'entend
-      ` : `
-      - Détaille les sensations physiques
-      - Décris les touchers, les frissons
-      - Utilise un vocabulaire tactile riche
-      - Mets l'accent sur ce qui se ressent
-      `}
-
-      TYPE D'EXCITATION ${existingProfile?.excitationType} :
-      - Adapte l'intensité selon le profil
-      - Utilise le style ${existingProfile?.tone}
-      - Longueur ${existingProfile?.length}
-      `;
-    }
-
-    // Construire le prompt système
-    const systemPrompt = `
-      ${promptTemplates.baseInstructions}
-
-      ANALYSE DU FANTASME :
-      Analyse le texte fourni par l'utilisateur pour identifier :
-      
-      ${eroticismInstructions}
-      
-      TEMPS DE LECTURE SOUHAITÉ : ${readingTime} minutes
-      - Les personnages impliqués
-      - Le lieu et l'ambiance
-      - Le type d'interaction souhaitée
-      - Le niveau d'intensité désiré
-      - Les éléments spécifiques qui excitent l'utilisateur
-
-      ${narrativeStyle}
-
-      ${promptTemplates.narrativeStructure}
-      ${promptTemplates.getIntroductionInstructions({
-        type: 'fantasme',
-        dominantStyle: existingProfile ? existingProfile.dominantStyle.toLowerCase() : 'visuel',
-        name: existingProfile ? existingProfile.name : ''
-      })}
-      ${promptTemplates.phoneticInstructions}
-      ${promptTemplates.styleExamples}
-      
-      EXEMPLE D'INTRODUCTION SPÉCIFIQUE :
-      ${introTemplates.generateCompleteIntroduction({
-        type: 'fantasme',
-        dominantStyle: existingProfile ? existingProfile.dominantStyle.toLowerCase() : 'visuel',
-        name: existingProfile ? existingProfile.name : ''
-      })}
-    `;
-
-    // Construire le prompt utilisateur
-    const userPrompt = `
-      Crée une histoire érotique basée sur le fantasme suivant :
-      
-      "${fantasyText}"
-      
-      ${existingProfile ? `
-      Utilise :
-      - Un ton ${existingProfile.tone}
-      - Une longueur ${existingProfile.length}
-      - Un style d'excitation ${existingProfile.excitationType.toLowerCase()}
-      
-      ${vocabulaireStyle}
-      ` : ''}
-
-      ${promptTemplates.authenticityRules}
-      ${promptTemplates.getNarrationInstructions(existingProfile ? existingProfile.name : 'l\'auditrice')}
-      ${promptTemplates.eroticVocabulary}
-      ${promptTemplates.hypnoticTechniques}
-      ${promptTemplates.progressionInstructions}
-      
-      N'oublie pas d'utiliser (...) pour les pauses naturelles dans le texte.
-      Utilise les sons phonétisés ("ahhh...", "mmmh...", etc.) et les variations de casse pour le crescendo.
-    `;
+    // Construire le prompt utilisateur optimisé
+    const userPrompt = optimizedPrompts.buildUserPrompt({
+      name: existingProfile?.name || 'l\'auditrice',
+      gender: existingProfile?.gender || 'femme',
+      orientation: existingProfile?.orientation || 'hétérosexuelle',
+      readingTime: readingTime,
+      fantasyText: fantasyText
+    });
 
     const messages = [
       { role: "system", content: systemPrompt },
@@ -726,6 +479,20 @@ const getLengthDescription = (length) => {
     'long': 'histoire détaillée et immersive (15-20 minutes)'
   }
   return descriptions[length] || descriptions['medium']
+}
+
+/**
+ * Convertit la longueur en minutes
+ * @param {string} length - Longueur choisie
+ * @returns {number} Temps en minutes
+ */
+const getLengthInMinutes = (length) => {
+  const minutes = {
+    'short': 7,
+    'medium': 12,
+    'long': 18
+  }
+  return minutes[length] || 12
 }
 
 export default {
