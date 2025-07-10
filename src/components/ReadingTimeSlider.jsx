@@ -5,12 +5,12 @@ const ReadingTimeSlider = ({ min = 2, max = 5, defaultValue = 2, value, onChange
   const currentValue = value !== undefined ? value : defaultValue;
   
   return (
-    <div className="mb-6 border border-white/10 rounded-lg p-4">
+    <div className="mb-6">
       <div className="flex justify-between items-center mb-2">
-        <label htmlFor="reading-time" className="text-base font-light text-white/90">
-          Durée : <span className="text-white font-medium">{currentValue} minutes</span>
+        <label htmlFor="reading-time" className="text-base font-light text-[#FFE1BE]">
+          Durée : <span className="text-[#FFE1BE] font-medium">{currentValue} minutes</span>
         </label>
-        <div className="text-sm text-white/70">
+        <div className="text-sm text-[#FFE1BE]">
           {min} min - {max} min
         </div>
       </div>
@@ -44,7 +44,7 @@ const ReadingTimeSlider = ({ min = 2, max = 5, defaultValue = 2, value, onChange
         />
       </div>
       
-      <div className="flex justify-between text-sm text-white/70 mt-2 font-light">
+      <div className="flex justify-between text-sm text-[#FFE1BE] mt-2 font-light">
         <span>Court</span>
         <span>Moyen</span>
         <span>Long</span>

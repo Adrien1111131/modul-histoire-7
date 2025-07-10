@@ -121,8 +121,8 @@ const EroticismLevelSlider = ({ value = 2, onChange }) => {
   return (
     <div className="mb-4">
       <div className="flex justify-between items-center mb-2">
-        <span className="text-blue-600 text-base font-semibold drop-shadow-lg">Doux</span>
-        <span className="text-red-600 text-base font-semibold drop-shadow-lg">Brûlant</span>
+        <span className="text-[#FFE1BE] text-base font-semibold drop-shadow-lg">Doux</span>
+        <span className="text-[#FFE1BE] text-base font-semibold drop-shadow-lg">Brûlant</span>
       </div>
       
       {/* Curseur personnalisé avec flamme */}
@@ -178,7 +178,7 @@ const EroticismLevelSlider = ({ value = 2, onChange }) => {
       />
       
       <div className="text-center mt-2">
-        <span className="text-white/80 text-base font-light tracking-wide">{getLevelDescription()}</span>
+        <span className="text-[#FFE1BE] text-base font-light tracking-wide">{getLevelDescription()}</span>
       </div>
     </div>
   );
