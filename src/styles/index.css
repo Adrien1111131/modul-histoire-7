@@ -16,6 +16,10 @@ body {
   @apply bg-gray-200 text-gray-700 px-6 py-2 rounded-md hover:bg-gray-300 transition-colors duration-200;
 }
 
+.btn-audio {
+  @apply bg-gradient-to-r from-[#e0c29b] via-[#d5b394] to-[#b39274] hover:from-[#d5b394] hover:via-[#c4a889] hover:to-[#a8856f] text-white px-6 py-3 rounded-full transition-all duration-300 hover:shadow-lg;
+}
+
 .question-card {
   @apply bg-white rounded-lg shadow-md p-8 my-8;
 }

@@ -254,7 +254,7 @@ const RandomStoryResult = ({ randomStoryData: propRandomStoryData }) => {
                 alert('Impossible de copier l\'histoire. Veuillez réessayer.');
               }
             }}
-            className="btn-primary flex items-center justify-center text-lg px-8 py-4"
+            className="btn-audio flex items-center justify-center text-lg"
           >
             <span role="img" aria-label="headphones" className="mr-3 text-xl">🎧</span> Écouter l'audio
           </button>
