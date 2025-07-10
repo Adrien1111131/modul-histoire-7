@@ -13,6 +13,7 @@ const RandomStoryResult = ({ randomStoryData: propRandomStoryData }) => {
   const [error, setError] = useState(null)
   const [copySuccess, setCopySuccess] = useState(false)
   const [randomStoryData, setRandomStoryData] = useState(null)
+  const [progress, setProgress] = useState(0)
 
   useEffect(() => {
     // Récupérer les données de l'histoire aléatoire
@@ -48,6 +49,24 @@ const RandomStoryResult = ({ randomStoryData: propRandomStoryData }) => {
       generateStory()
     }
   }, [randomStoryData])
+
+  // Effet pour la barre de progression (60 secondes)
+  useEffect(() => {
+    if (loading) {
+      setProgress(0)
+      const interval = setInterval(() => {
+        setProgress(prev => {
+          if (prev >= 100) {
+            clearInterval(interval)
+            return 100
+          }
+          return prev + (100 / 60) // Incrémente sur 60 secondes
+        })
+      }, 1000)
+
+      return () => clearInterval(interval)
+    }
+  }, [loading])
 
   const generateStory = async () => {
     try {
@@ -148,14 +167,32 @@ const RandomStoryResult = ({ randomStoryData: propRandomStoryData }) => {
 
   if (loading) {
     return (
-      <div className="max-w-2xl mx-auto">
-        <div className="question-card text-center">
-          <div className="space-y-6">
-            <span className="text-4xl heart-spin inline-block">❤️</span>
-            <h2 className="text-2xl font-bold">Création de votre histoire en cours...</h2>
-            <div className="typing-container">
-              <p className="typing-text">Cela peut prendre quelques instants</p>
+      <div className="elegant-loading-screen">
+        <div className="elegant-loading-card">
+          <span className="loading-heart heart-spin">❤️</span>
+          
+          <h2 className="loading-title">
+            Ton histoire est en train de naître, lentement, intensément.
+          </h2>
+          
+          <p className="loading-subtitle">
+            Cela peut prendre quelques minutes...
+          </p>
+          
+          <p className="loading-warning">
+            Surtout ne ferme pas l'application, ta patience sera récompensée...
+          </p>
+          
+          <div className="progress-container">
+            <div className="progress-bar">
+              <div 
+                className="progress-fill" 
+                style={{ width: `${Math.min(progress, 100)}%` }}
+              ></div>
             </div>
+            <p className="progress-text">
+              {Math.round(Math.min(progress, 100))}% - Création en cours...
+            </p>
           </div>
         </div>
       </div>
