@@ -20,116 +20,54 @@ body {
   @apply bg-white rounded-lg shadow-md p-8 my-8;
 }
 
-/* Animation du cœur */
-.heart-spin {
-  animation: heartbeat 2s ease-in-out infinite;
-}
-
-@keyframes heartbeat {
-  0%, 100% { 
-    transform: scale(1);
-    opacity: 1;
-  }
-  50% { 
-    transform: scale(1.2);
-    opacity: 0.8;
-  }
-}
-
-/* Écran de chargement élégant */
+/* Écran de chargement minimaliste */
 .elegant-loading-screen {
   @apply min-h-screen flex items-center justify-center p-4;
-  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  background: #000000;
 }
 
 .elegant-loading-card {
-  @apply max-w-md w-full text-center p-8 rounded-2xl relative;
-  background: rgba(0, 0, 0, 0.8);
-  border: 2px solid;
-  border-image: linear-gradient(45deg, #d4af37, #ffd700, #d4af37) 1;
-  box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
-}
-
-.elegant-loading-card::before {
-  content: '';
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  background: linear-gradient(45deg, #d4af37, #ffd700, #d4af37);
-  border-radius: 1rem;
-  z-index: -1;
-}
-
-.elegant-loading-card::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.9);
-  border-radius: 0.875rem;
-  z-index: -1;
-}
-
-.loading-heart {
-  @apply text-6xl mb-6 inline-block;
-  color: #ff6b6b;
-  filter: drop-shadow(0 0 10px rgba(255, 107, 107, 0.5));
+  @apply max-w-md w-full text-center p-8 rounded-2xl;
+  background: #000000;
+  border: 2px solid #c9b896;
+  border-radius: 16px;
 }
 
 .loading-title {
   @apply text-2xl font-bold mb-4;
-  color: #d4af37;
-  text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+  color: #c9b896;
   line-height: 1.4;
 }
 
 .loading-subtitle {
   @apply text-lg mb-6;
-  color: #e5e5e5;
-  opacity: 0.9;
+  color: #c9b896;
 }
 
 .loading-warning {
   @apply text-base mb-8;
-  color: #ffd700;
+  color: #c9b896;
   font-style: italic;
 }
 
-/* Barre de progression élégante */
+/* Barre de progression simple */
 .progress-container {
   @apply w-full mb-4;
 }
 
 .progress-bar {
   @apply w-full h-3 rounded-full relative overflow-hidden;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(212, 175, 55, 0.3);
+  background: #333333;
 }
 
 .progress-fill {
   @apply h-full rounded-full transition-all duration-1000 ease-out;
-  background: linear-gradient(90deg, #d4af37, #ffd700, #d4af37);
-  box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
-  animation: shimmer 2s infinite;
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: -200% center;
-  }
-  100% {
-    background-position: 200% center;
-  }
+  background: #c9b896;
 }
 
 .progress-text {
   @apply text-sm mt-2;
-  color: #d4af37;
-  opacity: 0.8;
+  color: #c9b896;
 }
 
 /* Animation du texte qui s'écrit */

@@ -96,8 +96,6 @@ const FreeFantasyResult = () => {
     return (
       <div className="elegant-loading-screen">
         <div className="elegant-loading-card">
-          <span className="loading-heart heart-spin">❤️</span>
-          
           <h2 className="loading-title">
             Ton histoire est en train de naître, lentement, intensément.
           </h2>
