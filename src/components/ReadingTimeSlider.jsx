@@ -1,6 +1,6 @@
 import React from 'react';
 
-const ReadingTimeSlider = ({ min = 2, max = 12, defaultValue = 2, value, onChange }) => {
+const ReadingTimeSlider = ({ min = 2, max = 5, defaultValue = 2, value, onChange }) => {
   // Utiliser soit la valeur fournie, soit la valeur par défaut
   const currentValue = value !== undefined ? value : defaultValue;
   

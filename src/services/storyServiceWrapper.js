@@ -17,7 +17,7 @@ export const generateCustomStory = async (customChoices, existingProfile = null)
       situation = { label: 'Situation par défaut' }, 
       personnage = { label: 'Personnage par défaut' }, 
       lieu = { label: 'Lieu par défaut' }, 
-      readingTime = 10,
+      readingTime = 5,
       eroticismLevel = 2 
     } = customChoices;
     

@@ -498,9 +498,9 @@ const getContextDescription = (context) => {
  */
 const getLengthDescription = (length) => {
   const descriptions = {
-    'short': 'histoire courte et intense (5-10 minutes de lecture)',
-    'medium': 'histoire de longueur moyenne avec développement (10-15 minutes)',
-    'long': 'histoire détaillée et immersive (15-20 minutes)'
+    'short': 'histoire courte et intense (2 minutes de lecture)',
+    'medium': 'histoire de longueur moyenne avec développement (3 minutes)',
+    'long': 'histoire détaillée et immersive (5 minutes)'
   }
   return descriptions[length] || descriptions['medium']
 }
@@ -512,11 +512,11 @@ const getLengthDescription = (length) => {
  */
 const getLengthInMinutes = (length) => {
   const minutes = {
-    'short': 7,
-    'medium': 12,
-    'long': 18
+    'short': 2,
+    'medium': 3,
+    'long': 5
   }
-  return minutes[length] || 12
+  return minutes[length] || 5
 }
 
 export default {
