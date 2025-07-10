@@ -46,7 +46,7 @@ const CustomStoryGenerator = () => {
     <div className="min-h-screen bg-amber-700/20">
       <Header />
       <div className="flex flex-col items-center justify-start py-4 animate-fadeIn">
-      <div className="w-full max-w-md mx-auto border border-blue-400 rounded-lg shadow-lg my-4 scrollable-card transform transition-all duration-500 ease-in-out hover:shadow-2xl">
+      <div className="w-full max-w-md mx-auto rounded-lg shadow-lg my-4 scrollable-card transform transition-all duration-500 ease-in-out hover:shadow-2xl">
         <div className="text-white relative">
           {/* Image de fond avec overlay pour améliorer la lisibilité */}
           <div className="absolute inset-0 z-0">

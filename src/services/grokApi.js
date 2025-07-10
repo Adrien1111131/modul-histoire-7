@@ -112,7 +112,7 @@ PROGRESSION ADAPTÉE :
       },
       body: JSON.stringify({
         messages,
-        model: "grok-3-latest",
+        model: "grok-4-0709",
         stream: false,
         temperature: randomTemperature,
         seed: randomSeed
@@ -120,7 +120,13 @@ PROGRESSION ADAPTÉE :
     });
 
     if (!response.ok) {
-      throw new Error('Erreur lors de la génération de l\'histoire');
+      const errorData = await response.text();
+      console.error('Erreur API détaillée:', {
+        status: response.status,
+        statusText: response.statusText,
+        body: errorData
+      });
+      throw new Error(`Erreur API ${response.status}: ${response.statusText} - ${errorData}`);
     }
 
     const data = await response.json();
@@ -183,7 +189,7 @@ export const generateRandomStory = async (randomStoryData) => {
       },
       body: JSON.stringify({
         messages,
-        model: "grok-3-latest",
+        model: "grok-4-0709",
         stream: false,
         temperature: randomTemperature,
         seed: randomSeed
@@ -191,7 +197,13 @@ export const generateRandomStory = async (randomStoryData) => {
     });
 
     if (!response.ok) {
-      throw new Error('Erreur lors de la génération de l\'histoire aléatoire');
+      const errorData = await response.text();
+      console.error('Erreur API détaillée (Random Story):', {
+        status: response.status,
+        statusText: response.statusText,
+        body: errorData
+      });
+      throw new Error(`Erreur API ${response.status}: ${response.statusText} - ${errorData}`);
     }
 
     const data = await response.json();
@@ -260,7 +272,7 @@ export const generateCustomStory = async (customChoices, existingProfile = null)
       },
       body: JSON.stringify({
         messages,
-        model: "grok-3-latest",
+        model: "grok-4-0709",
         stream: false,
         temperature: randomTemperature,
         seed: randomSeed
@@ -268,7 +280,13 @@ export const generateCustomStory = async (customChoices, existingProfile = null)
     });
 
     if (!response.ok) {
-      throw new Error('Erreur lors de la génération de l\'histoire personnalisée');
+      const errorData = await response.text();
+      console.error('Erreur API détaillée (Custom Story):', {
+        status: response.status,
+        statusText: response.statusText,
+        body: errorData
+      });
+      throw new Error(`Erreur API ${response.status}: ${response.statusText} - ${errorData}`);
     }
 
     const data = await response.json();
@@ -335,7 +353,7 @@ export const generateFreeFantasyStory = async (fantasyText, existingProfile = nu
       },
       body: JSON.stringify({
         messages,
-        model: "grok-3-latest",
+        model: "grok-4-0709",
         stream: false,
         temperature: randomTemperature,
         seed: randomSeed
@@ -343,7 +361,13 @@ export const generateFreeFantasyStory = async (fantasyText, existingProfile = nu
     });
 
     if (!response.ok) {
-      throw new Error('Erreur lors de la génération de l\'histoire personnalisée');
+      const errorData = await response.text();
+      console.error('Erreur API détaillée (Free Fantasy):', {
+        status: response.status,
+        statusText: response.statusText,
+        body: errorData
+      });
+      throw new Error(`Erreur API ${response.status}: ${response.statusText} - ${errorData}`);
     }
 
     const data = await response.json();
