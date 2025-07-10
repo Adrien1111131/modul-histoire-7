@@ -125,17 +125,10 @@ const FreeFantasyResult = () => {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <div className="question-card">
-        <h2 className="text-2xl font-bold mb-6">Votre fantasme personnalisé</h2>
+      <div className="question-card text-center">
+        <h2 className="text-2xl font-bold mb-8">Votre fantasme personnalisé</h2>
         
-        <div className="flex justify-between items-center mb-4">
-          <button
-            onClick={() => navigate('/free-fantasy')}
-            className="btn-secondary"
-          >
-            Nouveau fantasme
-          </button>
-          
+        <div className="flex justify-center">
           <button
             onClick={async () => {
               try {
@@ -153,64 +146,10 @@ const FreeFantasyResult = () => {
                 alert('Impossible de copier l\'histoire. Veuillez réessayer.');
               }
             }}
-            className="btn-primary flex items-center justify-center"
+            className="btn-primary flex items-center justify-center text-lg px-8 py-4"
           >
-            <span role="img" aria-label="headphones" className="mr-2">🎧</span> Générer l'audio
+            <span role="img" aria-label="headphones" className="mr-3 text-xl">🎧</span> Écouter l'audio
           </button>
-        </div>
-        
-        <div className="bg-blue-50 border border-blue-200 rounded-md p-4 mb-6">
-          <h3 className="text-sm font-medium text-blue-700 mb-2">Votre fantasme :</h3>
-          <p className="text-blue-700 text-sm italic">
-            "{fantasyText.length > 150 ? fantasyText.substring(0, 150) + '...' : fantasyText}"
-          </p>
-          {existingProfile && (
-            <p className="text-blue-700 text-sm mt-2">
-              Style narratif adapté : {existingProfile.dominantStyle}
-            </p>
-          )}
-        </div>
-        
-        <div className="prose prose-lg max-w-none mb-6">
-          {story.split('\n').map((paragraph, index) => {
-            // Mettre en évidence les pauses
-            const formattedText = paragraph
-              .replace(/\(\.\.\.\)/g, '<span class="text-gray-400">(...)</span>')
-              .replace(/\.\.\.\.\./g, '<span class="text-gray-400">.....</span>')
-              .replace(/\.\.\./g, '<span class="text-gray-400">...</span>')
-              .replace(/;/g, '<span class="text-gray-400">;</span>');
-
-            return (
-              <p 
-                key={index} 
-                className="mb-4 leading-relaxed"
-                dangerouslySetInnerHTML={{ __html: formattedText }}
-              />
-            );
-          })}
-        </div>
-
-        <div className="flex justify-between pt-6">
-          <div className="space-x-4">
-            <button
-              onClick={generateStory}
-              className="btn-secondary"
-            >
-              Régénérer
-            </button>
-            <button
-              onClick={handleCopy}
-              className={`btn-primary relative ${copySuccess ? 'bg-green-600' : ''}`}
-            >
-              {copySuccess ? 'Copié !' : 'Copier l\'histoire'}
-              {copySuccess && (
-                <span className="absolute -top-2 -right-2 flex h-4 w-4">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-4 w-4 bg-green-500"></span>
-                </span>
-              )}
-            </button>
-          </div>
         </div>
       </div>
     </div>

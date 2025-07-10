@@ -9,6 +9,119 @@ import * as optimizedPrompts from './optimizedPrompts'
 const N8N_WEBHOOK_URL = 'https://adrien31.app.n8n.cloud/webhook/c6101c94-785c-4eb3-a7e3-f01568125047';
 
 /**
+ * Détecte si l'erreur est liée au quota/rate limit
+ * @param {Error} error - Erreur à analyser
+ * @returns {boolean} True si c'est une erreur de quota
+ */
+const isQuotaError = (error) => {
+  const errorMessage = error.message.toLowerCase();
+  return (
+    error.message.includes('429') ||
+    errorMessage.includes('too many tokens') ||
+    errorMessage.includes('rate limit') ||
+    errorMessage.includes('quota') ||
+    errorMessage.includes('exhausted')
+  );
+};
+
+/**
+ * Effectue un appel API avec fallback automatique Grok-4 → Grok-3
+ * @param {Array} messages - Messages pour l'API
+ * @param {number} temperature - Température pour la génération
+ * @param {number} seed - Seed pour la reproductibilité
+ * @param {string} functionName - Nom de la fonction appelante (pour logs)
+ * @returns {Promise<Object>} Réponse de l'API
+ */
+const makeAPICallWithFallback = async (messages, temperature, seed, functionName) => {
+  // Tentative 1 : Grok-4 (premium)
+  try {
+    console.log(`[${functionName}] Tentative avec Grok-4-0709`);
+    
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${GROK_API_KEY}`
+      },
+      body: JSON.stringify({
+        messages,
+        model: "grok-4-0709",
+        stream: false,
+        temperature,
+        seed
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.text();
+      const error = new Error(`Erreur API ${response.status}: ${response.statusText} - ${errorData}`);
+      
+      // Si c'est une erreur de quota, on va essayer le fallback
+      if (response.status === 429 || isQuotaError(error)) {
+        console.warn(`[${functionName}] Quota Grok-4 atteint, fallback vers Grok-3...`);
+        throw error; // On lance l'erreur pour déclencher le fallback
+      }
+      
+      // Pour les autres erreurs, on les log et on les relance
+      console.error(`[${functionName}] Erreur API détaillée:`, {
+        status: response.status,
+        statusText: response.statusText,
+        body: errorData
+      });
+      throw error;
+    }
+
+    const data = await response.json();
+    console.log(`[${functionName}] ✅ Succès avec Grok-4-0709`);
+    return data;
+
+  } catch (error) {
+    // Si c'est une erreur de quota, on tente le fallback
+    if (isQuotaError(error)) {
+      console.log(`[${functionName}] 🔄 Fallback vers Grok-3 (grok-beta)`);
+      
+      try {
+        const fallbackResponse = await fetch(API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${GROK_API_KEY}`
+          },
+          body: JSON.stringify({
+            messages,
+            model: "grok-beta", // Grok-3 fallback
+            stream: false,
+            temperature: temperature * 0.9, // Légèrement plus conservateur
+            seed
+          })
+        });
+
+        if (!fallbackResponse.ok) {
+          const fallbackErrorData = await fallbackResponse.text();
+          console.error(`[${functionName}] Erreur fallback Grok-3:`, {
+            status: fallbackResponse.status,
+            statusText: fallbackResponse.statusText,
+            body: fallbackErrorData
+          });
+          throw new Error(`Erreur fallback API ${fallbackResponse.status}: ${fallbackResponse.statusText} - ${fallbackErrorData}`);
+        }
+
+        const fallbackData = await fallbackResponse.json();
+        console.log(`[${functionName}] ✅ Succès avec fallback Grok-3 (grok-beta)`);
+        return fallbackData;
+
+      } catch (fallbackError) {
+        console.error(`[${functionName}] ❌ Échec du fallback Grok-3:`, fallbackError);
+        throw new Error(`Échec complet: Grok-4 (quota) et Grok-3 (${fallbackError.message})`);
+      }
+    }
+    
+    // Pour les autres erreurs, on les relance directement
+    throw error;
+  }
+};
+
+/**
  * Envoie l'histoire générée au webhook n8n
  * @param {string} storyText - Texte de l'histoire
  */
@@ -104,32 +217,8 @@ PROGRESSION ADAPTÉE :
     const randomSeed = Math.floor(Math.random() * 10000);
     const randomTemperature = 0.7 + (Math.random() * 0.2); // Entre 0.7 et 0.9
 
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${GROK_API_KEY}`
-      },
-      body: JSON.stringify({
-        messages,
-        model: "grok-4-0709",
-        stream: false,
-        temperature: randomTemperature,
-        seed: randomSeed
-      })
-    });
-
-    if (!response.ok) {
-      const errorData = await response.text();
-      console.error('Erreur API détaillée:', {
-        status: response.status,
-        statusText: response.statusText,
-        body: errorData
-      });
-      throw new Error(`Erreur API ${response.status}: ${response.statusText} - ${errorData}`);
-    }
-
-    const data = await response.json();
+    // Utiliser le système de fallback automatique Grok-4 → Grok-3
+    const data = await makeAPICallWithFallback(messages, randomTemperature, randomSeed, 'generateStory');
     const content = cleanStoryContent(data.choices[0].message.content);
     
     // Envoi automatique à n8n
@@ -181,32 +270,8 @@ export const generateRandomStory = async (randomStoryData) => {
     const randomSeed = Math.floor(Math.random() * 10000);
     const randomTemperature = 0.7 + (Math.random() * 0.3); // Entre 0.7 et 1.0
 
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${GROK_API_KEY}`
-      },
-      body: JSON.stringify({
-        messages,
-        model: "grok-4-0709",
-        stream: false,
-        temperature: randomTemperature,
-        seed: randomSeed
-      })
-    });
-
-    if (!response.ok) {
-      const errorData = await response.text();
-      console.error('Erreur API détaillée (Random Story):', {
-        status: response.status,
-        statusText: response.statusText,
-        body: errorData
-      });
-      throw new Error(`Erreur API ${response.status}: ${response.statusText} - ${errorData}`);
-    }
-
-    const data = await response.json();
+    // Utiliser le système de fallback automatique Grok-4 → Grok-3
+    const data = await makeAPICallWithFallback(messages, randomTemperature, randomSeed, 'generateRandomStory');
     const content = cleanStoryContent(data.choices[0].message.content);
     
     // Envoi automatique à n8n
@@ -264,32 +329,8 @@ export const generateCustomStory = async (customChoices, existingProfile = null)
     const randomSeed = Math.floor(Math.random() * 10000);
     const randomTemperature = 0.7 + (Math.random() * 0.3); // Entre 0.7 et 1.0
 
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${GROK_API_KEY}`
-      },
-      body: JSON.stringify({
-        messages,
-        model: "grok-4-0709",
-        stream: false,
-        temperature: randomTemperature,
-        seed: randomSeed
-      })
-    });
-
-    if (!response.ok) {
-      const errorData = await response.text();
-      console.error('Erreur API détaillée (Custom Story):', {
-        status: response.status,
-        statusText: response.statusText,
-        body: errorData
-      });
-      throw new Error(`Erreur API ${response.status}: ${response.statusText} - ${errorData}`);
-    }
-
-    const data = await response.json();
+    // Utiliser le système de fallback automatique Grok-4 → Grok-3
+    const data = await makeAPICallWithFallback(messages, randomTemperature, randomSeed, 'generateCustomStory');
     const content = cleanStoryContent(data.choices[0].message.content);
     
     // Envoi automatique à n8n
@@ -345,32 +386,8 @@ export const generateFreeFantasyStory = async (fantasyText, existingProfile = nu
     const randomSeed = Math.floor(Math.random() * 10000);
     const randomTemperature = 0.7 + (Math.random() * 0.3); // Entre 0.7 et 1.0
 
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${GROK_API_KEY}`
-      },
-      body: JSON.stringify({
-        messages,
-        model: "grok-4-0709",
-        stream: false,
-        temperature: randomTemperature,
-        seed: randomSeed
-      })
-    });
-
-    if (!response.ok) {
-      const errorData = await response.text();
-      console.error('Erreur API détaillée (Free Fantasy):', {
-        status: response.status,
-        statusText: response.statusText,
-        body: errorData
-      });
-      throw new Error(`Erreur API ${response.status}: ${response.statusText} - ${errorData}`);
-    }
-
-    const data = await response.json();
+    // Utiliser le système de fallback automatique Grok-4 → Grok-3
+    const data = await makeAPICallWithFallback(messages, randomTemperature, randomSeed, 'generateFreeFantasyStory');
     const content = cleanStoryContent(data.choices[0].message.content);
     
     // Envoi automatique à n8n
