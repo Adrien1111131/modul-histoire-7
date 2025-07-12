@@ -34,7 +34,7 @@ const isQuotaError = (error) => {
  */
 const makeAPICall = async (messages, temperature, seed, functionName) => {
   try {
-    console.log(`[${functionName}] Appel API avec Grok-3 (grok-beta)`);
+    console.log(`[${functionName}] Appel API avec Grok-3 (grok-3-latest)`);
     
     const response = await fetch(API_URL, {
       method: 'POST',
@@ -44,7 +44,7 @@ const makeAPICall = async (messages, temperature, seed, functionName) => {
       },
       body: JSON.stringify({
         messages,
-        model: "grok-beta", // Grok-3 uniquement
+        model: "grok-3-latest", // Grok-3 uniquement
         stream: false,
         temperature,
         seed
@@ -62,7 +62,7 @@ const makeAPICall = async (messages, temperature, seed, functionName) => {
     }
 
     const data = await response.json();
-    console.log(`[${functionName}] ✅ Succès avec Grok-3 (grok-beta)`);
+    console.log(`[${functionName}] ✅ Succès avec Grok-3 (grok-3-latest)`);
     return data;
 
   } catch (error) {
