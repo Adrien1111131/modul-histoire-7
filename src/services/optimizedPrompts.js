@@ -15,8 +15,8 @@ NARRATION :
 - Langage naturel et quotidien, évite le trop littéraire
 
 PHONÉTISATION TTS :
-- Utilise (...) pour les pauses naturelles
-- Utilise (....) pour les pauses longues
+- Utilise ... pour les pauses naturelles
+- Utilise ..... pour les pauses longues
 - Sons prolongés : "ahhh...", "mmmh...", "oooohhh..."
 - MAJUSCULES pour les mots à ACCENTUER
 - Progression : doux → sensuel → intense → jouissance → doux
@@ -322,7 +322,7 @@ export const buildUserPrompt = (options = {}) => {
 1. Crée une introduction détaillée qui pose le contexte
 2. Développe une progression naturelle et crédible
 3. Intègre tous les éléments demandés de manière fluide
-4. Utilise (...) pour les pauses naturelles
+4. Utilise ... pour les pauses naturelles
 5. Adapte l'intensité progressivement`;
   
   return userPrompt;
