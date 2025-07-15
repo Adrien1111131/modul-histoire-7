@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import analyticsService from '../services/analyticsService';
 import userHistoryService from '../services/userHistoryService';
+import { getServerLogs, clearServerLogs } from '../services/serverLogsService';
 import UserHistoryViewer from './UserHistoryViewer';
 
 const AdminAnalytics = () => {
@@ -18,6 +19,9 @@ const AdminAnalytics = () => {
   const [password, setPassword] = useState('');
   const [showUserHistory, setShowUserHistory] = useState(false);
   const [selectedUserForHistory, setSelectedUserForHistory] = useState(null);
+  const [serverLogs, setServerLogs] = useState([]);
+  const [loadingServerLogs, setLoadingServerLogs] = useState(false);
+  const [serverStats, setServerStats] = useState(null);
 
   // Mot de passe simple pour protéger l'accès
   const ADMIN_PASSWORD = 'analytics2025';
@@ -51,12 +55,59 @@ const AdminAnalytics = () => {
     }
   };
 
-  const loadData = () => {
+  const loadData = async () => {
+    // Charger les données locales
     const globalStats = analyticsService.getGlobalStats();
     const usersList = analyticsService.getUsersList();
     
     setStats(globalStats);
     setUsers(usersList);
+
+    // Charger les logs du serveur
+    setLoadingServerLogs(true);
+    try {
+      const serverResponse = await getServerLogs();
+      if (serverResponse.status === 'success') {
+        setServerLogs(serverResponse.logs);
+        
+        // Calculer les stats du serveur
+        const serverUserStats = calculateServerStats(serverResponse.logs);
+        setServerStats(serverUserStats);
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement des logs serveur:', error);
+    } finally {
+      setLoadingServerLogs(false);
+    }
+  };
+
+  const calculateServerStats = (logs) => {
+    if (!logs || logs.length === 0) return null;
+
+    const uniqueUsers = [...new Set(logs.map(log => log.userId))];
+    const uniqueSessions = [...new Set(logs.map(log => log.sessionId))];
+    
+    const actionCounts = logs.reduce((acc, log) => {
+      acc[log.action] = (acc[log.action] || 0) + 1;
+      return acc;
+    }, {});
+    
+    const componentCounts = logs.reduce((acc, log) => {
+      acc[log.component] = (acc[log.component] || 0) + 1;
+      return acc;
+    }, {});
+
+    return {
+      totalLogs: logs.length,
+      uniqueUsers: uniqueUsers.length,
+      uniqueSessions: uniqueSessions.length,
+      actionCounts,
+      componentCounts,
+      dateRange: {
+        first: logs.length > 0 ? logs[0].timestamp : null,
+        last: logs.length > 0 ? logs[logs.length - 1].timestamp : null
+      }
+    };
   };
 
   const handleUserSelect = (userId) => {
@@ -185,6 +236,12 @@ const AdminAnalytics = () => {
                   className={`px-3 py-1 rounded-md text-sm ${view === 'users' ? 'bg-blue-100 text-blue-800' : 'text-gray-600 hover:text-gray-900'}`}
                 >
                   Utilisatrices
+                </button>
+                <button
+                  onClick={() => setView('server-logs')}
+                  className={`px-3 py-1 rounded-md text-sm ${view === 'server-logs' ? 'bg-blue-100 text-blue-800' : 'text-gray-600 hover:text-gray-900'}`}
+                >
+                  Logs Serveur {loadingServerLogs && '⏳'}
                 </button>
               </div>
             </div>
@@ -466,6 +523,159 @@ const AdminAnalytics = () => {
                   </div>
                 ))}
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Logs du serveur */}
+        {view === 'server-logs' && (
+          <div className="space-y-6">
+            {/* Stats du serveur */}
+            {serverStats && (
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div className="bg-white p-6 rounded-lg shadow">
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">Logs Serveur</h3>
+                  <p className="text-3xl font-bold text-orange-600">{serverStats.totalLogs}</p>
+                  <p className="text-sm text-gray-500 mt-1">Centralisés</p>
+                </div>
+                <div className="bg-white p-6 rounded-lg shadow">
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">Utilisateurs</h3>
+                  <p className="text-3xl font-bold text-green-600">{serverStats.uniqueUsers}</p>
+                  <p className="text-sm text-gray-500 mt-1">Uniques</p>
+                </div>
+                <div className="bg-white p-6 rounded-lg shadow">
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">Sessions</h3>
+                  <p className="text-3xl font-bold text-purple-600">{serverStats.uniqueSessions}</p>
+                  <p className="text-sm text-gray-500 mt-1">Actives</p>
+                </div>
+                <div className="bg-white p-6 rounded-lg shadow">
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">Dernière activité</h3>
+                  <p className="text-sm text-gray-600">
+                    {serverStats.dateRange.last ? formatDate(serverStats.dateRange.last) : 'Aucune'}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Liste des logs du serveur */}
+            <div className="bg-white p-6 rounded-lg shadow">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-medium text-gray-900">
+                  Logs en temps réel ({serverLogs.length})
+                </h3>
+                <div className="flex items-center space-x-4">
+                  <button
+                    onClick={loadData}
+                    className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors text-sm"
+                    disabled={loadingServerLogs}
+                  >
+                    {loadingServerLogs ? '⏳ Actualisation...' : '🔄 Actualiser'}
+                  </button>
+                  <button
+                    onClick={async () => {
+                      if (confirm('Êtes-vous sûr de vouloir supprimer tous les logs du serveur ?')) {
+                        await clearServerLogs();
+                        setServerLogs([]);
+                        setServerStats(null);
+                      }
+                    }}
+                    className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors text-sm"
+                  >
+                    🗑️ Vider les logs
+                  </button>
+                </div>
+              </div>
+
+              {serverLogs.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  <p>Aucun log serveur disponible</p>
+                  <p className="text-sm mt-2">Les logs apparaîtront ici dès que les utilisateurs interagiront avec l'application</p>
+                </div>
+              ) : (
+                <div className="space-y-3 max-h-96 overflow-y-auto">
+                  {serverLogs
+                    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+                    .map((log) => (
+                      <div key={log.id} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50">
+                        <div className="flex justify-between items-start mb-2">
+                          <div className="flex items-center space-x-3">
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${getActionColor(log.action)}`}>
+                              {formatActionName(log.action)}
+                            </span>
+                            <div className="text-sm">
+                              <span className="font-medium text-gray-900">{log.userName}</span>
+                              <span className="text-gray-500 ml-2">({log.userGender})</span>
+                            </div>
+                            <span className="text-xs text-gray-400">{log.component}</span>
+                          </div>
+                          <span className="text-xs text-gray-400">{formatDate(log.timestamp)}</span>
+                        </div>
+                        
+                        {/* Informations utilisateur enrichies */}
+                        <div className="text-xs text-gray-500 mb-2 flex flex-wrap gap-4">
+                          <span>ID: {log.userId}</span>
+                          <span>Email: {log.userEmail}</span>
+                          <span>Âge: {log.userAgeRange}</span>
+                          <span>Orientation: {log.userOrientation}</span>
+                          {log.dominantStyle !== 'non-spécifié' && <span>Style: {log.dominantStyle}</span>}
+                          {log.excitationType !== 'non-spécifié' && <span>Excitation: {log.excitationType}</span>}
+                        </div>
+
+                        {/* Données de l'action */}
+                        {Object.keys(log.data || {}).length > 0 && (
+                          <div className="mt-2">
+                            <details className="text-sm">
+                              <summary className="cursor-pointer text-gray-600 hover:text-gray-900">
+                                📊 Données de l'action ({Object.keys(log.data).length} propriétés)
+                              </summary>
+                              <div className="mt-2 p-3 bg-gray-50 rounded text-xs">
+                                {/* Affichage spécialisé selon le type d'action */}
+                                {log.action.includes('story_generated') && log.data.content && (
+                                  <div className="mb-3">
+                                    <strong>📖 Histoire générée:</strong>
+                                    <div className="mt-1 p-2 bg-white rounded border max-h-32 overflow-y-auto">
+                                      {log.data.content.substring(0, 500)}
+                                      {log.data.content.length > 500 && '...'}
+                                    </div>
+                                  </div>
+                                )}
+                                
+                                {log.action.includes('kink') && log.data.selectedKinks && (
+                                  <div className="mb-3">
+                                    <strong>💭 Fantasmes sélectionnés:</strong>
+                                    <div className="mt-1 flex flex-wrap gap-1">
+                                      {log.data.selectedKinks.map((kink, idx) => (
+                                        <span key={idx} className="bg-pink-100 text-pink-800 px-2 py-1 rounded text-xs">
+                                          {kink}
+                                        </span>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+
+                                {log.action.includes('free_fantasy') && log.data.freeText && (
+                                  <div className="mb-3">
+                                    <strong>✍️ Texte libre:</strong>
+                                    <div className="mt-1 p-2 bg-white rounded border">
+                                      {log.data.freeText}
+                                    </div>
+                                  </div>
+                                )}
+
+                                <details className="mt-2">
+                                  <summary className="cursor-pointer text-gray-500">Données brutes JSON</summary>
+                                  <pre className="mt-1 p-2 bg-white rounded border text-xs overflow-x-auto">
+                                    {JSON.stringify(log.data, null, 2)}
+                                  </pre>
+                                </details>
+                              </div>
+                            </details>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                </div>
+              )}
             </div>
           </div>
         )}

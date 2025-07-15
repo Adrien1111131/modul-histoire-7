@@ -59,10 +59,31 @@ const UserHistoryViewer = ({ userId, userName, onClose }) => {
   if (loading) {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white rounded-lg p-6">
-          <div className="flex items-center space-x-3">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-            <span>Chargement de l'historique...</span>
+        <div className="bg-white rounded-lg p-8 shadow-2xl">
+          <div className="flex flex-col items-center space-y-4">
+            <div className="relative">
+              {/* Cœur qui tourne */}
+              <div className="animate-spin text-4xl text-pink-500">
+                ❤️
+              </div>
+              {/* Effet de pulsation */}
+              <div className="absolute inset-0 animate-ping text-4xl text-pink-300 opacity-75">
+                ❤️
+              </div>
+            </div>
+            <div className="text-center">
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                Chargement de l'historique...
+              </h3>
+              <p className="text-sm text-gray-600">
+                Récupération des données utilisateur en cours
+              </p>
+              {/* Barre de progression animée */}
+              <div className="mt-4 w-64 bg-gray-200 rounded-full h-2">
+                <div className="bg-gradient-to-r from-pink-400 to-purple-500 h-2 rounded-full animate-pulse" 
+                     style={{width: '60%'}}></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

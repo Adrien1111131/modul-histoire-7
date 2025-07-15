@@ -1,5 +1,6 @@
 // Service pour capturer et analyser les interactions utilisateur
 import userHistoryService from './userHistoryService';
+import { sendLogToServer } from './serverLogsService';
 
 const ANALYTICS_STORAGE_KEY = 'user_analytics_logs';
 const SESSION_STORAGE_KEY = 'current_session_id';
@@ -119,8 +120,13 @@ export const logUserAction = (action, component, data = {}, metadata = {}) => {
       existingLogs.splice(0, existingLogs.length - 10000);
     }
     
-    // Sauvegarder
+    // Sauvegarder localement
     localStorage.setItem(ANALYTICS_STORAGE_KEY, JSON.stringify(existingLogs));
+    
+    // Envoyer au serveur (en arrière-plan, sans bloquer)
+    sendLogToServer(logEntry).catch(error => {
+      console.warn('Impossible d\'envoyer le log au serveur:', error);
+    });
     
     console.log('📊 Analytics:', action, data);
   } catch (error) {
